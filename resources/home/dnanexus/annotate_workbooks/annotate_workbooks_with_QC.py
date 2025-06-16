@@ -1,10 +1,15 @@
 import pandas as pd
 import openpyxl
 import sys
+import json
 
 # create annotate excel table function
 multiqc_folder=sys.argv[1]
 reports_folder=sys.argv[2]
+config_json = sys.argv[3]
+print(config_json)
+cells_to_edit=json.loads(config_json)
+
 multiqc_path = "multiqc_inputs/" + multiqc_folder + "/"
 reports_path = "reports_inputs/" + reports_folder + "/"
 
@@ -27,18 +32,24 @@ def annotate_workbook(sample_row, reports_path):
     # get workbook corresponding to sample
     print(sample)
     path = reports_path + sample + ".xlsx"
-    sample_workbook = openpyxl.load_workbook(path)
+    try:
+        sample_workbook = openpyxl.load_workbook(path)
+    except FileNotFoundError:
+        # doesn't exist
+        print("No workbook found for ", sample)
+        return
+
+    # sample_workbook = openpyxl.load_workbook(path)
     worksheet = sample_workbook['summary']
 
-    # add "Somalier" to cell where data is currently added
-    worksheet['A20'] = "Somalier"
     # add data to sheet
-    worksheet['B15'] = coverage
-    worksheet['B16'] = contamination
-    worksheet['B17'] = total_reads_M
-    worksheet['B18'] = fold80
-    worksheet['B19'] = insert_size
-    worksheet['B20'] = somalier
+    # want to pass cell locations in via a config for customisation
+    worksheet[cells_to_edit.get("250_coverage")] = coverage
+    worksheet[cells_to_edit.get("freemix")] = contamination
+    worksheet[cells_to_edit.get("M_reads")] = total_reads_M
+    worksheet[cells_to_edit.get("fold_80")] = fold80
+    worksheet[cells_to_edit.get("insert_size")] = insert_size
+    worksheet[cells_to_edit.get("somalier")] = somalier
 
     # save file
     new_path= sample + "_QC_added.xlsx"

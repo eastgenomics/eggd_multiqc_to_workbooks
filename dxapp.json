@@ -25,6 +25,14 @@
       "class": "string",
       "optional": false,
       "help": ""
+    },
+    {
+      "name": "config_file",
+      "label": "config file for setting cells to use",
+      "class": "file",
+      "patterns": ["*json"],
+      "optional": false,
+      "help": ""
     }
   ],
   "outputSpec": [
