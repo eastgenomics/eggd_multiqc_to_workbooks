@@ -38,7 +38,8 @@ main() {
 
     echo "environment setup"
     ls
-
+    echo $(basename "$path_to_multiqc_folder")
+    multiqc_folder=$(basename "$path_to_multiqc_folder")
     sudo -H python3 -m pip install --no-index --no-deps /home/dnanexus/packages/*
     mkdir -p /home/dnanexus/out && sudo chmod 757 /home/dnanexus/out
 
@@ -46,19 +47,23 @@ main() {
     cd multiqc_inputs
     dx download -r "$path_to_multiqc_folder"
     ls
+    ls "$multiqc_folder"
     cd ..
 
+    echo $(basename "$path_to_reports_folder")
+    reports_folder=$(basename "$path_to_reports_folder")
 
     mkdir reports_inputs
     cd reports_inputs
     dx download -r "$path_to_reports_folder"
     ls
+    ls "$reports_folder"
     cd ..
 
     echo "running python"
     ls 
 
-    python3 annotate_workbooks/annotate_workbooks_with_QC.py
+    python3 annotate_workbooks/annotate_workbooks_with_QC.py "$multiqc_folder" "$reports_folder"
     # The following line(s) use the utility dx-jobutil-add-output to format and
     # add output variables to your job's output as appropriate for the output
     # class.  Run "dx-jobutil-add-output -h" for more information on what it

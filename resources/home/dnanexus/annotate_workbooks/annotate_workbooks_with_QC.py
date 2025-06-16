@@ -1,10 +1,12 @@
 import pandas as pd
 import openpyxl
+import sys
 
 # create annotate excel table function
-
-multiqc_path = "multiqc_inputs/eggd_MultiQC/"
-reports_path = "reports_inputs/eggd_generate_variant_workbook/"
+multiqc_folder=sys.argv[1]
+reports_folder=sys.argv[2]
+multiqc_path = "multiqc_inputs/" + multiqc_folder + "/"
+reports_path = "reports_inputs/" + reports_folder + "/"
 
 def annotate_workbook(sample_row, reports_path):
     """
