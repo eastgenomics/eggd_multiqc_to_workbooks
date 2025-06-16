@@ -1,9 +1,16 @@
 {
   "name": "eggd_multiqc_to_workbooks",
   "title": "eggd multiqc to workbook",
-  "summary": "a tool to identify multiqc files and add data to reports workbooks",
+  "summary": "A tool to identify multiqc files and add data to reports workbooks",
   "dxapi": "1.0.0",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "changeLog": [
+    {
+        "version": "1.0.0",
+        "date": "2025-06-15",
+        "description": "Create first iteration of support app to add multiqc values automatically"
+    }
+],
   "inputSpec": [
     {
       "name": "path_to_multiqc_folder",
@@ -48,5 +55,12 @@
         }
       }
     }
-  }
+  },
+    "openSource": true,
+    "access": {
+      "project": "CONTRIBUTE",
+      "allProjects": "CONTRIBUTE"
+  },
+  "developers": ["org-emee_1"],
+  "authorizedUsers": ["org-emee_1"]
 }
