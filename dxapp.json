@@ -1,0 +1,52 @@
+{
+  "name": "eggd_multiqc_to_workbooks",
+  "title": "eggd multiqc to workbook",
+  "summary": "a tool to identify multiqc files and add data to reports workbooks",
+  "dxapi": "1.0.0",
+  "version": "0.0.1",
+  "inputSpec": [
+    {
+      "name": "path_to_multiqc_folder",
+      "label": "path to folder containing multiqc txt data",
+      "class": "string",
+      "optional": false,
+      "help": ""
+    },
+    {
+      "name": "path_to_reports_folder",
+      "label": "path to folder containing reports",
+      "class": "string",
+      "optional": false,
+      "help": ""
+    }
+  ],
+  "outputSpec": [
+    {
+      "name": "annotated_reports",
+      "label": "annotated reports",
+      "class": "array:file",
+      "help": ""
+    }
+  ],
+  "runSpec": {
+    "timeoutPolicy": {
+      "*": {
+        "hours": 2
+      }
+    },
+    "interpreter": "bash",
+    "file": "src/eggd_multiqc_to_workbooks.sh",
+    "distribution": "Ubuntu",
+    "release": "20.04",
+    "version": "0"
+  },
+  "regionalOptions": {
+    "aws:eu-central-1": {
+      "systemRequirements": {
+        "*": {
+          "instanceType": "mem1_ssd1_v2_x4"
+        }
+      }
+    }
+  }
+}
