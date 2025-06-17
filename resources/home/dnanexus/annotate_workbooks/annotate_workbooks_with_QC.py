@@ -3,13 +3,16 @@ import openpyxl
 import sys
 import json
 
-# create annotate excel table function
+# get paths from bash commandline arguments
+# improvement - use argparse
 multiqc_folder=sys.argv[1]
 reports_folder=sys.argv[2]
 config_json = sys.argv[3]
-print(config_json)
+
+# read config string into dict
 cells_to_edit=json.loads(config_json)
 
+# set paths
 multiqc_path = "multiqc_inputs/" + multiqc_folder + "/"
 reports_path = "reports_inputs/" + reports_folder + "/"
 
@@ -35,11 +38,9 @@ def annotate_workbook(sample_row, reports_path):
     try:
         sample_workbook = openpyxl.load_workbook(path)
     except FileNotFoundError:
-        # doesn't exist
         print("No workbook found for ", sample)
         return
 
-    # sample_workbook = openpyxl.load_workbook(path)
     worksheet = sample_workbook['summary']
 
     # add data to sheet
@@ -83,11 +84,7 @@ qc_table.apply(annotate_workbook, axis=1, reports_path = reports_path)
 print("Reports annotated")
 
 # to make an app would need to have path to MultiQC output, or just work folder
-# need to have path to reports
-# fix sample names
 # need to transform coverage to %
 # need to make total reads human readable
 # need to makr fold80 fewer sigfig
 # need to ad bp to insert size
-
-# apply annotate function to all samples in big qc table
