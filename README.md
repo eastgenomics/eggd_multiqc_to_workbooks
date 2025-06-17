@@ -27,7 +27,8 @@ The tool also adds the text "Somalier" into cell A20 in the summary page of the 
     - multiqc_general_stats.txt
     - multiqc_picard_HsMetrics.txt
     - multiqc_somalier_sex_check.txt
-2. Excel workbook files to annotate with qc metrics, held in the same folder (given with input `-ipath_to_reports_folder`)
+2. An excel workbook files to annotate with qc metrics, held in the same folder (given with input `-ipath_to_reports_folder`)
+3. A json file containing the cells to update (given with input `-iconfig_file`)
 
 **Output files**
 
@@ -36,8 +37,5 @@ The tool also adds the text "Somalier" into cell A20 in the summary page of the 
 **Example**
 
 ```
-dx run applet-J17z70848Z9ZBj16BZ8yF293 \
--ipath_to_multiqc_folder="project-J10ZQ3848Z9XJ9G77ZbGYbXZ:/output/0123_4567/eggd_MultiQC/" \
--ipath_to_reports_folder="project-J10ZQ3848Z9XJ9G77ZbGYbXZ:/output/0123_4567/eggd_generate_variant_workbook/" \
---destination "project-J10ZQ3848Z9XJ9G77ZbGYbXZ:/output/0123_4567/annotated_workbooks"
+dx run eggd_multiqc_to_workbooks -ipath_to_multiqc_folder="project-J10ZQ3848Z9XJ9G77ZbGYbXZ:/output/test_locked/multiQC_data/" -ipath_to_reports_folder="project-J10ZQ3848Z9XJ9G77ZbGYbXZ:/output/test_locked/report_workbook/" -iconfig_file="file-J18290848Z9q6FzQF3jbF99v" --destination "project-J10ZQ3848Z9XJ9G77ZbGYbXZ:/output/test_locked/annotated_workbook"
 ```
