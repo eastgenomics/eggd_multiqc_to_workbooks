@@ -17,7 +17,7 @@ From these files the following metrics are found and added to the workbooks:
 - Insert size
 - Somalier Sex Check
 
-The tool also adds the text "Somalier" into cell A20 in the summary page of the workbook, as this is currently added manually.
+The tool also adds the text "Somalier" into cell A20 in the summary page of the workbook. Data is from somalier is added to B20, but currently the "Somalier text" is added manually by scientists when processing the workbooks.
 
 ## What data are required for this app to run? ##
 
