@@ -13,7 +13,7 @@ From these files the following metrics are found and added to the workbooks:
 - % Coverage at 250 X
 - FreeMix
 - Total Reads (M)
-- Fold 80 base penaly
+- Fold 80 base penalty
 - Insert size
 - Somalier Sex Check
 
