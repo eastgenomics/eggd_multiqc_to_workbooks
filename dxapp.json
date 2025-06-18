@@ -49,6 +49,19 @@
         "hours": 2
       }
     },
+    "assetDepends": [
+      {
+        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+        "folder": "/app_assets/python_packages/python_packages_v1.1.0",
+        "name": "python_packages",
+        "title": "Packages for python to be installed with pip3",
+        "description": "Includes numpy-1.20.1-cp38-cp38-manylinux1_x86_64.whl pandas-1.2.3-cp38-cp38-manylinux1_x86_64.whl pytz-2021.1-py2.py3-none-any.whl",
+        "version": "1.1.0",
+        "distribution": "Ubuntu",
+        "release": "20.04",
+        "instanceType": "mem1_ssd1_v2_x4"
+      }
+    ],
     "interpreter": "bash",
     "file": "src/eggd_multiqc_to_workbooks.sh",
     "distribution": "Ubuntu",

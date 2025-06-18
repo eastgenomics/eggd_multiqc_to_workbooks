@@ -42,17 +42,18 @@ main() {
     #echo "$cells_to_edit"
 
     echo "environment setup"
-    ls
-    #echo $(basename "$path_to_multiqc_folder")
-    multiqc_folder=$(basename "$path_to_multiqc_folder")
+
+    # install and download assets
+    pip3 install /pytz-*.whl /numpy-*.whl /pandas-*.whl
+
     sudo -H python3 -m pip install --no-index --no-deps /home/dnanexus/packages/*
     mkdir -p /home/dnanexus/out && sudo chmod 757 /home/dnanexus/out
 
+    multiqc_folder=$(basename "$path_to_multiqc_folder")
     mkdir multiqc_inputs
     cd multiqc_inputs
     dx download -r "$path_to_multiqc_folder"
-    #ls
-    #ls "$multiqc_folder"
+
     cd ..
 
     # echo $(basename "$path_to_reports_folder")
