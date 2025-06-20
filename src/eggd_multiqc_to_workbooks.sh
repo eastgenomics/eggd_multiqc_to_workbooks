@@ -50,31 +50,27 @@ main() {
     mkdir -p /home/dnanexus/out && sudo chmod 757 /home/dnanexus/out
 
     multiqc_folder=$(basename "$path_to_multiqc_folder")
-    mkdir multiqc_inputs
-    cd multiqc_inputs
+    mkdir /home/dnanexus/multiqc_inputs
+    cd /home/dnanexus/multiqc_inputs
     dx download -r "$path_to_multiqc_folder"
-
-    cd ..
+    cd /home/dnanexus/
 
     # echo $(basename "$path_to_reports_folder")
     reports_folder=$(basename "$path_to_reports_folder")
 
-    mkdir reports_inputs
-    cd reports_inputs
+    mkdir /home/dnanexus/reports_inputs
+    cd /home/dnanexus/reports_inputs
     dx download -r "$path_to_reports_folder"
-    #ls
-    #ls "$reports_folder"
-    cd ..
+    cd /home/dnanexus/
 
     echo "running python"
-    #ls 
 
     python3 annotate_workbooks/annotate_workbooks_with_QC.py --multiqc_folder "$multiqc_folder" --reports_folder "$reports_folder" --config_json "$cells_to_edit"
     # The following line(s) use the utility dx-jobutil-add-output to format and
     # add output variables to your job's output as appropriate for the output
     # class.  Run "dx-jobutil-add-output -h" for more information on what it
     # does.
-    ls out
+
     echo "uploading outputs"
     directory_to_make="out/annotated_reports"
     mkdir -p "$directory_to_make"
