@@ -5,7 +5,7 @@
         "M_reads": "B11",
         "fold_80":"B12",
         "insert_size": "B13",
-        "somalier": "B14"
-
+        "somalier": "B14",
+        "somalier_text": "A14"
     }
 }
