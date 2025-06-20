@@ -60,9 +60,9 @@ def annotate_workbook(sample_row, reports_path):
 
     worksheet = sample_workbook['summary']
 
-    # add "Somalier" to cell where data is currently added
+    # add "Somalier" to cell where header is currently added
 
-    worksheet['A20'] = "Somalier"
+    worksheet[cells_to_edit.get("somalier_text")] = "Somalier"
 
     # add data to sheet
     # want to pass cell locations in via a config for customisation
