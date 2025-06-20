@@ -1,0 +1,87 @@
+{
+  "name": "eggd_multiqc_to_workbooks",
+  "title": "eggd multiqc to workbook",
+  "summary": "A tool to identify multiqc files and add data to reports workbooks",
+  "dxapi": "1.0.0",
+  "version": "1.0.0",
+  "changeLog": [
+    {
+        "version": "1.0.0",
+        "date": "2025-06-15",
+        "description": "Create first iteration of support app to add multiqc values automatically"
+    }
+],
+  "inputSpec": [
+    {
+      "name": "path_to_multiqc_folder",
+      "label": "path to folder containing multiqc txt data",
+      "class": "string",
+      "optional": false,
+      "help": ""
+    },
+    {
+      "name": "path_to_reports_folder",
+      "label": "path to folder containing reports",
+      "class": "string",
+      "optional": false,
+      "help": ""
+    },
+    {
+      "name": "config_file",
+      "label": "config file for setting cells to use",
+      "class": "file",
+      "patterns": ["*json"],
+      "optional": false,
+      "help": ""
+    }
+  ],
+  "outputSpec": [
+    {
+      "name": "annotated_reports",
+      "label": "annotated reports",
+      "class": "array:file",
+      "help": ""
+    }
+  ],
+  "runSpec": {
+    "timeoutPolicy": {
+      "*": {
+        "hours": 2
+      }
+    },
+    "assetDepends": [
+      {
+        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+        "folder": "/app_assets/python_packages/python_packages_v1.1.0",
+        "name": "python_packages",
+        "title": "Packages for python to be installed with pip3",
+        "description": "Includes numpy-1.20.1-cp38-cp38-manylinux1_x86_64.whl pandas-1.2.3-cp38-cp38-manylinux1_x86_64.whl pytz-2021.1-py2.py3-none-any.whl",
+        "version": "1.1.0",
+        "distribution": "Ubuntu",
+        "release": "20.04",
+        "instanceType": "mem1_ssd1_v2_x4"
+      }
+    ],
+    "interpreter": "bash",
+    "file": "src/eggd_multiqc_to_workbooks.sh",
+    "distribution": "Ubuntu",
+    "release": "20.04",
+    "version": "0"
+  },
+  "regionalOptions": {
+    "aws:eu-central-1": {
+      "systemRequirements": {
+        "*": {
+          "instanceType": "mem1_ssd1_v2_x4"
+        }
+      }
+    }
+  },
+    "openSource": true,
+    "access": {
+      "project": "CONTRIBUTE",
+      "allProjects": "CONTRIBUTE"
+  },
+  "developers": ["org-emee_1"],
+  "authorizedUsers": ["org-emee_1"]
+}
