@@ -37,5 +37,9 @@ The tool also adds the text "Somalier" into cell A20 in the summary page of the 
 **Example**
 
 ```
-dx run eggd_multiqc_to_workbooks -ipath_to_multiqc_folder="project-J10ZQ3848Z9XJ9G77ZbGYbXZ:/output/test_locked/multiQC_data/" -ipath_to_reports_folder="project-J10ZQ3848Z9XJ9G77ZbGYbXZ:/output/test_locked/report_workbook/" -iconfig_file="file-J18290848Z9q6FzQF3jbF99v" --destination "project-J10ZQ3848Z9XJ9G77ZbGYbXZ:/output/test_locked/annotated_workbook"
+dx run eggd_multiqc_to_workbooks \
+ -ipath_to_multiqc_folder="project-J1BXZx04383J0pXJqgx3p9BY:/output/MYE-250612_1500/eggd_MultiQC/250611_A01295_0544_BH3CKYDRX7_MYE-MYE-250612_1500-multiqc_data/" \
+ -ipath_to_reports_folder="project-J1BXZx04383J0pXJqgx3p9BY:/output/MYE-250612_1500/eggd_generate_variant_workbook-2.10.1/" \
+ -iconfig_file="file-J1BXbb84383BYV07QJ8FV4q6" \
+ --destination "project-J1BXZx04383J0pXJqgx3p9BY:/output/MYE-250612_1500/eggd_multiqc_to_workbooks-1.0.0"
 ```

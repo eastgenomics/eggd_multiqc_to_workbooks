@@ -9,9 +9,12 @@ from pathlib import Path
 # improvement - use argparse
 parser = argparse.ArgumentParser(
     description="Annotate sample workbooks with QC metrics extracted from MultiQC outputs.")
-parser.add_argument("--multiqc_folder", help="Name of the MultiQC folder under multiqc_inputs/")
-parser.add_argument("--reports_folder", help="Name of the reports folder under reports_inputs/")
-parser.add_argument("--config_json", help="JSON string mapping metric names to cell addresses")
+parser.add_argument("--multiqc_folder",
+                     help="Name of the MultiQC folder under multiqc_inputs/")
+parser.add_argument("--reports_folder",
+                    help="Name of the reports folder under reports_inputs/")
+parser.add_argument("--config_json",
+                    help="JSON string mapping metric names to cell addresses")
 args = parser.parse_args()
 
 multiqc_folder = args.multiqc_folder
@@ -39,11 +42,33 @@ def annotate_workbook(sample_row, reports_path):
 
     sample = sample_row["Sample"]
     try:
-        coverage = sample_row["custom_coverage_mqc-generalstats-custom_coverage-250x"]
-        contamination = sample_row["VerifyBAMID_mqc-generalstats-verifybamid-FREEMIX"]
-        total_reads_M = sample_row["Samtools_mqc-generalstats-samtools-mapped_passed"]
-        fold80 = sample_row["FOLD_80_BASE_PENALTY"]
-        insert_size = sample_row["Picard_mqc-generalstats-picard-summed_median"]
+        coverage = round(
+            sample_row[
+                "custom_coverage_mqc-generalstats-custom_coverage-250x"
+                ], 1
+            )
+        coverage_string = f"{coverage}%"
+
+        contamination = round(
+            sample_row[
+                "VerifyBAMID_mqc-generalstats-verifybamid-FREEMIX"
+                ], 3
+            )
+        contamination_string = f"{contamination}%"
+
+        total_reads_M = round(
+            (sample_row[
+                "Samtools_mqc-generalstats-samtools-mapped_passed"
+                ] / 1000000), 1
+            )
+
+        fold80 = round(sample_row["FOLD_80_BASE_PENALTY"],1)
+
+        insert_size = sample_row[
+            "Picard_mqc-generalstats-picard-summed_median"
+            ]
+        insert_size_string = f"{insert_size} bp"
+
         somalier = sample_row["Match_Sexes"]
     except KeyError as err:
         print(f"[WARN] Column {err} missing for sample {sample}; skipping row.")
@@ -66,11 +91,11 @@ def annotate_workbook(sample_row, reports_path):
 
     # add data to sheet
     # want to pass cell locations in via a config for customisation
-    worksheet[cells_to_edit.get("250_coverage")] = coverage
-    worksheet[cells_to_edit.get("freemix")] = contamination
+    worksheet[cells_to_edit.get("250_coverage")] = coverage_string
+    worksheet[cells_to_edit.get("freemix")] = contamination_string
     worksheet[cells_to_edit.get("M_reads")] = total_reads_M
     worksheet[cells_to_edit.get("fold_80")] = fold80
-    worksheet[cells_to_edit.get("insert_size")] = insert_size
+    worksheet[cells_to_edit.get("insert_size")] = insert_size_string
     worksheet[cells_to_edit.get("somalier")] = somalier
 
     # save file
