@@ -54,7 +54,7 @@ def annotate_workbook(sample_row, reports_path):
         contamination = round(
             (sample_row[
                 "VerifyBAMID_mqc-generalstats-verifybamid-FREEMIX"
-                ]) * 100, 3
+                ] * 100), 3
             )
         contamination_string = f"{contamination}%"
 
