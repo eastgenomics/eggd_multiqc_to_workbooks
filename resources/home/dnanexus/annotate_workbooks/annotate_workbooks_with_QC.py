@@ -49,10 +49,12 @@ def annotate_workbook(sample_row, reports_path):
             )
         coverage_string = f"{coverage}%"
 
+       # The  freeMix score is % contamination predicted (where 0.1=10%).
+        # using * 100 to convert to percentage
         contamination = round(
-            sample_row[
+            (sample_row[
                 "VerifyBAMID_mqc-generalstats-verifybamid-FREEMIX"
-                ], 3
+                ] * 100), 3
             )
         contamination_string = f"{contamination}%"
 
