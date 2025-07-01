@@ -33,6 +33,14 @@
       "patterns": ["*json"],
       "optional": false,
       "help": ""
+    },
+    {
+      "name": "file_suffix",
+      "label": "suffix to add to output file",
+      "class": "string",
+      "optional": true,
+      "default": ".xlsx",
+      "help": ""
     }
   ],
   "outputSpec": [

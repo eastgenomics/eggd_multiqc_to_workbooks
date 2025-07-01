@@ -65,7 +65,7 @@ main() {
 
     echo "running python"
 
-    python3 annotate_workbooks/annotate_workbooks_with_QC.py --multiqc_folder "$multiqc_folder" --reports_folder "$reports_folder" --config_json "$cells_to_edit"
+    python3 annotate_workbooks/annotate_workbooks_with_QC.py --multiqc_folder "$multiqc_folder" --reports_folder "$reports_folder" --config_json "$cells_to_edit" --file_suffix "$file_suffix"
     # The following line(s) use the utility dx-jobutil-add-output to format and
     # add output variables to your job's output as appropriate for the output
     # class.  Run "dx-jobutil-add-output -h" for more information on what it
@@ -74,7 +74,7 @@ main() {
     echo "uploading outputs"
     directory_to_make="out/annotated_reports"
     mkdir -p "$directory_to_make"
-    mv ./*_QC_added.xlsx "$directory_to_make"
+    mv ./*"$file_suffix" "$directory_to_make"
 
 
     dx-upload-all-outputs
