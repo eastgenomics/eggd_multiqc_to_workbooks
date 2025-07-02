@@ -7,7 +7,7 @@ eggd_multiqc_to_workbooks finds the multiqc data txt files corresponding to the 
 Currently the app looks for:
 - multiqc_general_stats.txt
 - multiqc_picard_HsMetrics.txt
-- multiqc_somalier_sex_check.txt
+- multiqc_multiqc_sex_check_table.txt, if unavailable then multiqc_somalier_sex_check.txt
 
 From these files the following metrics are found and added to the workbooks:
 - % Coverage at 250 X
@@ -15,9 +15,11 @@ From these files the following metrics are found and added to the workbooks:
 - Total Reads (M)
 - Fold 80 base penalty
 - Insert size
-- Somalier Sex Check
+- Sex Check or Somalier Sex Check
 
-The tool also adds the text "Somalier" into cell A20 in the summary page of the workbook. Data is from somalier is added to B20, but currently the "Somalier text" is added manually by scientists when processing the workbooks.
+The tool also adds the text "Sex Check" in the summary page of the workbook to the cell specified by the config file. This is done as  currently the text "Somalier" is added manually by scientists when processing the workbooks, but the lab will move to using the tool Sex Check in the next release.
+
+If the data from the tool eggd_sex_check is available, this is added to cell specified in the config file. If Unavailable, but data from somalier is available, the output od somalier will be added with the text "Somalier used. Sex match:". Data is from somalier is added to B20, but currently the "Somalier text" is added manually by scientists when processing the workbooks.
 
 ## What data are required for this app to run? ##
 
@@ -26,9 +28,13 @@ The tool also adds the text "Somalier" into cell A20 in the summary page of the 
 1. The following files should be held in the same folder (given with input `-ipath_to_multiqc_folder` )
     - multiqc_general_stats.txt
     - multiqc_picard_HsMetrics.txt
-    - multiqc_somalier_sex_check.txt
+    - multiqc_multiqc_sex_check_table.txt or multiqc_somalier_sex_check.txt
 2. An excel workbook files to annotate with qc metrics, held in the same folder (given with input `-ipath_to_reports_folder`)
 3. A json file containing the cells to update (given with input `-iconfig_file`)
+
+**Optional inputs**
+
+1. A file suffix for the output file, default = ".xlsx" (given with input `-ifile_suffix`)
 
 **Output files**
 
