@@ -76,7 +76,7 @@ def annotate_workbook(sample_row, reports_path):
         try:
             # if doenst exist try sex check format
             sex_check = sample_row["matched"]
-            sex_check_string = f"test {sex_check}"
+            sex_check_string = f"{sex_check}"
         except KeyError as err:
             print("Sex check value no found, looking for somalier")
             try:
