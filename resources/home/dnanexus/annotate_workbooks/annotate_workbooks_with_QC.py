@@ -127,8 +127,8 @@ def create_combined_qc(multiqc_path):
 
     general_stats_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("general_stats_file")
     hsmetrics_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("hsmetrics_file")
-    somalier_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("sexcheck_file")
-    sexcheck_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("somalier_file")
+    sexcheck_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("sexcheck_file")
+    somalier_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("somalier_file")
 
     # try finding sex check data, if not produced try somalier
     try:
