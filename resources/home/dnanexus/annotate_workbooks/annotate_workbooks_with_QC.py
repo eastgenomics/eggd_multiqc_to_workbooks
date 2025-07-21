@@ -126,7 +126,7 @@ def create_combined_qc(multiqc_path):
     general_stats_path = multiqc_path / "multiqc_general_stats.txt"
     hsmetrics_path = multiqc_path / "multiqc_picard_HsMetrics.txt"
     somalier_path = multiqc_path / "multiqc_somalier_sex_check.txt"
-    sexcheck_path = multiqc_path / "multiqc_sex_check_table.txt"
+    sexcheck_path = multiqc_path / "multiqc_sex_check.txt"
 
     # try finding sex check data, if not produced try somalier
     try:
