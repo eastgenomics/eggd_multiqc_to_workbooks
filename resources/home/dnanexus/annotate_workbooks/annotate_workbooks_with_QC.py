@@ -25,7 +25,9 @@ config_json = args.config_json
 file_suffix = args.file_suffix
 
 # read config string into dict
-cells_to_edit=json.loads(config_json)
+config_file=json.loads(config_json)
+
+print(config_file)
 
 # set paths
 multiqc_path = Path("multiqc_inputs") / multiqc_folder
@@ -102,16 +104,16 @@ def annotate_workbook(sample_row, reports_path):
 
     # add "Somalier" to cell where header is currently added
 
-    worksheet[cells_to_edit.get("somalier_text")] = "Sex Check"
+    worksheet[config_file.get("cell_locations",{}).get("somalier_text")] = "Sex Check"
 
     # add data to sheet
     # want to pass cell locations in via a config for customisation
-    worksheet[cells_to_edit.get("250_coverage")] = coverage_string
-    worksheet[cells_to_edit.get("freemix")] = contamination_string
-    worksheet[cells_to_edit.get("M_reads")] = total_reads_M
-    worksheet[cells_to_edit.get("fold_80")] = fold80
-    worksheet[cells_to_edit.get("insert_size")] = insert_size_string
-    worksheet[cells_to_edit.get("somalier")] = sex_check_string
+    worksheet[config_file.get("cell_locations",{}).get("250_coverage")] = coverage_string
+    worksheet[config_file.get("cell_locations",{}).get("freemix")] = contamination_string
+    worksheet[config_file.get("cell_locations",{}).get("M_reads")] = total_reads_M
+    worksheet[config_file.get("cell_locations",{}).get("fold_80")] = fold80
+    worksheet[config_file.get("cell_locations",{}).get("insert_size")] = insert_size_string
+    worksheet[config_file.get("cell_locations",{}).get("somalier")] = sex_check_string
 
     # save file
     new_path= sample + file_suffix
@@ -123,10 +125,10 @@ def create_combined_qc(multiqc_path):
     """
     # get general statistics, picard hs metrics and somalier
 
-    general_stats_path = multiqc_path / "multiqc_general_stats.txt"
-    hsmetrics_path = multiqc_path / "multiqc_picard_HsMetrics.txt"
-    somalier_path = multiqc_path / "multiqc_somalier_sex_check.txt"
-    sexcheck_path = multiqc_path / "multiqc_sex_check.txt"
+    general_stats_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("general_stats_file")
+    hsmetrics_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("hsmetrics_file")
+    somalier_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("sexcheck_file")
+    sexcheck_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("somalier_file")
 
     # try finding sex check data, if not produced try somalier
     try:
@@ -162,8 +164,4 @@ qc_table.apply(annotate_workbook, axis=1, reports_path = reports_path)
 
 print("Reports annotated")
 
-# to make an app would need to have path to MultiQC output, or just work folder
-# need to transform coverage to %
-# need to make total reads human readable
-# need to makr fold80 fewer sigfig
-# need to ad bp to insert size
+
