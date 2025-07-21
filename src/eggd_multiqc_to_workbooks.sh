@@ -38,7 +38,7 @@ main() {
     # exit code will prematurely exit the script; if no error was
     # reported in the job_error.json file, then the failure reason
     # will be AppInternalError with a generic error message.
-    cells_to_edit=$(jq -r '.cell_locations' "$config_file_path" )
+    cells_to_edit=$(jq -r '.' "$config_file_path" )
     #echo "$cells_to_edit"
 
     echo "environment setup"
