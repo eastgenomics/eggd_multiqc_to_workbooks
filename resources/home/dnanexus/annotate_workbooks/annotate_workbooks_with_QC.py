@@ -49,32 +49,34 @@ def annotate_workbook(sample_row, reports_path):
     try:
         coverage = round(
             sample_row[
-                "custom_coverage_mqc-generalstats-custom_coverage-250x"
+                "custom_content_custom_coverage-250x"
                 ], 1
             )
         coverage_string = f"{coverage}%"
 
-       # The  freeMix score is % contamination predicted (where 0.1=10%).
-        # using * 100 to convert to percentage
+       # The freeMix score is % contamination predicted
+       # conversion to percentage is now calculated during multiqc
         contamination = round(
             (sample_row[
-                "VerifyBAMID_mqc-generalstats-verifybamid-FREEMIX"
-                ] * 100), 3
+                "verifybamid-FREEMIX"
+                ]), 3
             )
         contamination_string = f"{contamination}%"
 
+        # number of mapped_passed reads is now divided by 1M during multiqc
         total_reads_M = round(
             (sample_row[
-                "Samtools_mqc-generalstats-samtools-mapped_passed"
-                ] / 1000000), 1
+                "samtools_flagstat-mapped_passed"
+                ]), 1
             )
 
         fold80 = round(sample_row["FOLD_80_BASE_PENALTY"],1)
 
         insert_size = int(sample_row[
-            "Picard_mqc-generalstats-picard-summed_median"
+            "picard_insertsizemetrics-summed_median"
             ])
         insert_size_string = f"{insert_size} bp"
+
         try:
             # if doenst exist try sex check format
             sex_check = sample_row["matched"]

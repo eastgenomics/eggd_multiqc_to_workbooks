@@ -3,7 +3,7 @@
   "title": "eggd_multiqc_to_workbooks",
   "summary": "A tool to identify multiqc files and add data to reports workbooks",
   "dxapi": "1.0.0",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "changeLog": [
     {
         "version": "1.0.0",
@@ -14,7 +14,12 @@
       "version": "1.0.1",
       "date": "2025-07-21",
       "description": "Fix title, fix path to expected file for compatibility with uranus"
-  }
+    },
+    {
+      "version": "1.0.2",
+      "date": "2026-02-05",
+      "description": "Fix column names for updated MultiQC outputs"
+    }
 ],
   "inputSpec": [
     {
