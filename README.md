@@ -8,7 +8,7 @@ Currently the app looks for:
 - multiqc_general_stats.txt
 - multiqc_picard_HsMetrics.txt
 - multiqc_multiqc_sex_check_table.txt, if unavailable then multiqc_somalier_sex_check.txt
-- <sample>__markdup.per-base.bed.gz
+- <sample>_markdup.per-base.bed.gz
 
 From these files the following metrics are found and added to the workbooks:
 - % Coverage at 250 X
