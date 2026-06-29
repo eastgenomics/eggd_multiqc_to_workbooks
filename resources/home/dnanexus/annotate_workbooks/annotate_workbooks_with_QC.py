@@ -258,6 +258,28 @@ def process_workbooks(intersect_file, file_suffix, intersect_suffix):
         print(f"Error processing {intersect_file.name}: {e}")
 
 
+def annotate_gene_depths(intersect_path, file_suffix):
+    """
+    Annotate all workbooks with min depth for genes in intersected bed files.
+    """
+    intersect_path = Path(intersect_path)
+    files = list(intersect_path.glob(f"*{intersect_suffix}"))
+    if not files:
+        print(f"[WARN] No intersected bed files found in {intersect_path}")
+        if intersect_path.exists():
+            print(f"Directory contains: {list(intersect_path.iterdir())}")
+        else:
+            print(f"Directory does not exist: {intersect_path}")
+
+    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+        futures = [executor.submit(
+            process_workbooks, intersect_file, file_suffix, intersect_suffix)
+            for intersect_file in files
+        ]
+        for f in futures:
+            f.result()
+
+
 print("Beginning python")
 qc_table = create_combined_qc(multiqc_path)
 print(qc_table)
