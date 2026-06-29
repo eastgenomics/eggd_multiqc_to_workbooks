@@ -225,6 +225,39 @@ def write_gene_depth_to_cell(worksheet, gene, depth, pos):
     return depth, pos
 
 
+def process_workbooks(intersect_file, file_suffix, intersect_suffix):
+    """
+    Load each workbook and annotate with minimum depth per gene
+    """
+    sample = intersect_file.name.replace(intersect_suffix, "")
+    workbook_path = Path(sample + file_suffix)
+    if not workbook_path.exists():
+        print(f"[WARN] No annotated workbook found at {workbook_path}")
+        # continue
+        return
+
+    gene_depths, gene_pos = get_min_depth_per_gene(intersect_file)
+    if not gene_depths:
+        print(f"[WARN] No genes found for {intersect_file.name}")
+
+    try:
+        sample_workbook = openpyxl.load_workbook(workbook_path)
+        worksheet = sample_workbook["summary"]
+
+        for gene, depth in gene_depths.items():
+            pos = gene_pos[gene]
+            depth_result, pos_result = write_gene_depth_to_cell(
+                worksheet,
+                gene,
+                depth=depth,
+                pos=pos)
+            if depth_result is None:
+                print(f"[WARN] Skipped {gene}: no cell location")
+        sample_workbook.save(workbook_path)
+    except Exception as e:
+        print(f"Error processing {intersect_file.name}: {e}")
+
+
 print("Beginning python")
 qc_table = create_combined_qc(multiqc_path)
 print(qc_table)
