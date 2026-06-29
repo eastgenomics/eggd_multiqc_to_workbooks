@@ -21,6 +21,8 @@ main() {
 
     echo "Value of path_to_multiqc_folder: '$path_to_multiqc_folder'"
     echo "Value of path_to_reports_folder: '$path_to_reports_folder'"
+    echo "Value of path_to_mosdepth_folder: '$path_to_mosdepth_folder'"
+    echo "Value of path_to_bedfile: '$path_to_bedfile'"
     dx-download-all-inputs --parallel
     # Fill in your application code here.
     #
@@ -62,6 +64,17 @@ main() {
     cd /home/dnanexus/reports_inputs
     dx download -r "$path_to_reports_folder"
     cd /home/dnanexus/
+
+    mkdir /home/dnanexus/mosdepth_inputs
+	cd /home/dnanexus/mosdepth_inputs
+    dx find data --path "$path_to_mosdepth_folder" --name "*_markdup.per-base.bed.gz" --brief > /tmp/mosdepth_ids.txt
+    cat /tmp/mosdepth_ids.txt | xargs -P 8 -n 1 dx download
+	cd /home/dnanexus/
+    
+	mkdir /home/dnanexus/bedfile
+	cd /home/dnanexus/bedfile
+	dx download "$path_to_bedfile" -o bedfile.bed
+	cd /home/dnanexus
 
     echo "running python"
 
