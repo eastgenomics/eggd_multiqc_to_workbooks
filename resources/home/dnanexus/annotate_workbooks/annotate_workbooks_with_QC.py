@@ -37,6 +37,32 @@ config_file = json.loads(config_json)
 
 print(config_file)
 
+cell_locations = config_file.get("cell_locations", {})
+multiqc_file_names = config_file.get("multiqc_file_names", {})
+required_cells = {
+    "250_coverage",
+    "freemix",
+    "M_reads",
+    "fold_80",
+    "insert_size",
+    "somalier",
+    "somalier_text",
+    "gene_depths"}
+required_multiqc_files = {
+    "general_stats_file",
+    "hsmetrics_file",
+    "sexcheck_file",
+    "somalier_file"}
+
+missing = [
+    f"cell_locations.{key}" for key in required_cells
+    if not cell_locations.get(key)]
+missing += [
+    f"multiqc_file_names.{key}" for key in required_multiqc_files
+    if not multiqc_file_names.get(key)]
+if missing:
+    raise ValueError(f"Missing required config values: {', '.join(missing)}")
+
 # set paths
 multiqc_path = Path("multiqc_inputs") / multiqc_folder
 reports_path = Path("reports_inputs") / reports_folder
