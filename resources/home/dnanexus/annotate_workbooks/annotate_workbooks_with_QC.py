@@ -83,15 +83,15 @@ def annotate_workbook(sample_row, reports_path):
             sex_check = sample_row["matched"]
             sex_check_string = f"{sex_check}"
         except KeyError as err:
-            print("Sex check value no found, looking for somalier")
+            print(f"Sex check value not found {err}, looking for somalier")
             try:
                 sex_check = sample_row["Match_Sexes"]
                 sex_check_string = f"Somalier used. Sex match: {sex_check}"
             except KeyError as err:
-                print(f"[WARN] {err}: column missing for {sample}; skipping")
+                print(f"[WARN] {err}: Column missing for {sample}; skipping")
                 return
     except KeyError as err:
-        print(f"[WARN] {err}: column missing for {sample}; skipping")
+        print(f"[WARN] {err}: Column missing for {sample}; skipping")
         return
 
     # get workbook corresponding to sample
@@ -149,7 +149,7 @@ def create_combined_qc(multiqc_path):
     try:
         sexcheck = pd.read_csv(sexcheck_path, sep="\t")
     except FileNotFoundError as e:
-        print("sexcheck not found, looking for somalier")
+        print(f"sexcheck not found: {e.filename}, looking for somalier")
         try:
             # if sex check file does not exist, find somalier check
             sexcheck = pd.read_csv(somalier_path, sep="\t")
