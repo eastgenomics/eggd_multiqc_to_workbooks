@@ -42,6 +42,13 @@
       "help": ""
     },
     {
+      "name": "path_to_mosdepth_folder",
+      "label": "path to folder containing mosdepth data",
+      "class": "string",
+      "optional": false,
+      "help": ""
+    },
+    {
       "name": "config_file",
       "label": "config file for setting cells to use",
       "class": "file",
