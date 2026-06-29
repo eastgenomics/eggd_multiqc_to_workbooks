@@ -13,16 +13,22 @@ parser.add_argument("--multiqc_folder",
                     help="Name of the MultiQC folder under multiqc_inputs/")
 parser.add_argument("--reports_folder",
                     help="Name of the reports folder under reports_inputs/")
+parser.add_argument("--intersect_folder",
+                    help="Intersect folder name under intersected_beds/")
 parser.add_argument("--config_json",
                     help="JSON string mapping metric names to cell addresses")
 parser.add_argument("--file_suffix",
                     help="string for customisable file suffix")
+parser.add_argument("--intersect_suffix", default=".intersect.bed",
+                    help="suffix used to find intersected bed files")
 args = parser.parse_args()
 
 multiqc_folder = args.multiqc_folder
 reports_folder = args.reports_folder
+intersect_folder = args.intersect_folder
 config_json = args.config_json
 file_suffix = args.file_suffix
+intersect_suffix = args.intersect_suffix
 
 # read config string into dict
 config_file = json.loads(config_json)
@@ -32,9 +38,11 @@ print(config_file)
 # set paths
 multiqc_path = Path("multiqc_inputs") / multiqc_folder
 reports_path = Path("reports_inputs") / reports_folder
+intersect_path = Path(intersect_folder)
 
 print(multiqc_path)
 print(reports_path)
+print(intersect_path)
 
 
 def annotate_workbook(sample_row, reports_path):
