@@ -108,7 +108,7 @@
       }
     ],
     "interpreter": "bash",
-    "file": "src/eggd_multiqc_to_workbooks.sh",
+    "file": "src/eggd_qc_to_workbooks.sh",
     "distribution": "Ubuntu",
     "release": "20.04",
     "version": "0"
