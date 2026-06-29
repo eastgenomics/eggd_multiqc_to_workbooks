@@ -80,8 +80,10 @@ def annotate_workbook(sample_row, reports_path):
                 "samtools_flagstat-mapped_passed"
                 ]), 1
             )
+        total_reads_M_string = f"{total_reads_M}"
 
         fold80 = round(sample_row["FOLD_80_BASE_PENALTY"], 1)
+        fold80_string = f"{fold80}"
 
         insert_size = int(sample_row[
             "picard_insertsizemetrics-summed_median"
@@ -127,9 +129,9 @@ def annotate_workbook(sample_row, reports_path):
     worksheet[config_file.get(
         "cell_locations", {}).get("freemix")] = contamination_string
     worksheet[config_file.get(
-        "cell_locations", {}).get("M_reads")] = total_reads_M
+        "cell_locations", {}).get("M_reads")] = total_reads_M_string
     worksheet[config_file.get(
-        "cell_locations", {}).get("fold_80")] = fold80
+        "cell_locations", {}).get("fold_80")] = fold80_string
     worksheet[config_file.get(
         "cell_locations", {}).get("insert_size")] = insert_size_string
     worksheet[config_file.get(
