@@ -49,6 +49,14 @@
       "help": ""
     },
     {
+      "name": "path_to_bedfile",
+      "label": "bedfile used for intersecting mosdepth data",
+      "class": "file",
+      "patterns": ["*.bed"],
+      "optional": false,
+      "help": ""
+    },
+    {
       "name": "config_file",
       "label": "config file for setting cells to use",
       "class": "file",
