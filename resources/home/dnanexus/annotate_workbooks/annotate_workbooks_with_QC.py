@@ -4,6 +4,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor
+import os
 
 # get paths from bash commandline arguments
 # improvement - use argparse
@@ -184,6 +186,18 @@ def create_combined_qc(multiqc_path):
 print("Beginning python")
 qc_table = create_combined_qc(multiqc_path)
 print(qc_table)
-qc_table.apply(annotate_workbook, axis=1, reports_path=reports_path)
 
-print("Reports annotated")
+with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+    print(f"Using {os.cpu_count()} CPU cores")
+    futures = [
+        executor.submit(annotate_workbook, row, reports_path)
+        for _, row in qc_table.iterrows()
+    ]
+    for f in futures:
+        f.result()
+
+print("Reports annotated with run QC")
+
+annotate_gene_depths(intersect_path, file_suffix)
+
+print("Reports annotated with gene depths")
