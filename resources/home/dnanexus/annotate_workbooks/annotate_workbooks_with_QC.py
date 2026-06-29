@@ -208,6 +208,23 @@ def get_min_depth_per_gene(intersect_path):
     return gene_depths, gene_pos
 
 
+def write_gene_depth_to_cell(worksheet, gene, depth, pos):
+    """
+    Find min depth for given gene and write it into the workbook
+    """
+    gene_cells = config_file.get("cell_locations", {}).get(
+        "gene_depths", {}).get(gene)
+    if gene_cells is None:
+        print(f"[WARN] No cell locations configured for {gene}; skipping")
+        return None, None
+
+    worksheet[gene_cells["depth_text"]] = f"{gene}"
+
+    worksheet[gene_cells["min_depth"]] = f"{pos}: {depth}x"
+
+    return depth, pos
+
+
 print("Beginning python")
 qc_table = create_combined_qc(multiqc_path)
 print(qc_table)
