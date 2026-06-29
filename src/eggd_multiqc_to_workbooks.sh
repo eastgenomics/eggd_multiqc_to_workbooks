@@ -69,6 +69,41 @@ main() {
     dx download -r "$path_to_reports_folder"
     cd /home/dnanexus/
 
+<<<<<<< HEAD
+=======
+    mkdir /home/dnanexus/mosdepth_inputs
+	cd /home/dnanexus/mosdepth_inputs
+    dx find data --path "$path_to_mosdepth_folder" --name "*_markdup.per-base.bed.gz" --brief > /tmp/mosdepth_ids.txt
+    cat /tmp/mosdepth_ids.txt | xargs -P 8 -n 1 dx download
+	cd /home/dnanexus/
+    
+	mkdir /home/dnanexus/bedfile
+	cd /home/dnanexus/bedfile
+	dx download "$path_to_bedfile" -o bedfile.bed
+	cd /home/dnanexus
+
+    echo "running bedtools"
+	intersect_folder="/home/dnanexus/intersected_beds"
+    mkdir -p "$intersect_folder"
+
+    max_jobs=$(nproc)
+    job_count=0
+
+    while IFS= read -r -d '' bed; do
+        sample=$(basename "$bed" _markdup.per-base.bed.gz)
+        out_bed="/home/dnanexus/intersected_beds/${sample}.intersect.bed"
+        bedtools intersect -a "$bed" -b "/home/dnanexus/bedfile/bedfile.bed" -wa -wb > "$out_bed"
+        echo "Processed $sample -> $out_bed"
+
+        job_count=$((job_count + 1))
+        if (( job_count >= max_jobs )); then
+            wait
+        fi
+    done < <(find /home/dnanexus/mosdepth_inputs -name "*_markdup.per-base.bed.gz" -print0)
+
+    wait
+
+>>>>>>> 40a5669 (Run bedtools intersect)
     echo "running python"
 
     python3 annotate_workbooks/annotate_workbooks_with_QC.py --multiqc_folder "$multiqc_folder" --reports_folder "$reports_folder" --config_json "$cells_to_edit" --file_suffix "$file_suffix"
