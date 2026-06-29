@@ -49,6 +49,12 @@ main() {
     sudo -H python3 -m pip install --no-index --no-deps /home/dnanexus/packages/*
     mkdir -p /home/dnanexus/out && sudo chmod 757 /home/dnanexus/out
 
+    if ! command -v bedtools >/dev/null 2>&1; then
+        echo "installing bedtools"
+        sudo apt-get update
+        sudo apt-get install -y bedtools
+    fi
+
     multiqc_folder=$(basename "$path_to_multiqc_folder")
     mkdir /home/dnanexus/multiqc_inputs
     cd /home/dnanexus/multiqc_inputs
