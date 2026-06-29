@@ -265,11 +265,14 @@ def annotate_gene_depths(intersect_path, file_suffix):
     intersect_path = Path(intersect_path)
     files = list(intersect_path.glob(f"*{intersect_suffix}"))
     if not files:
-        print(f"[WARN] No intersected bed files found in {intersect_path}")
         if intersect_path.exists():
-            print(f"Directory contains: {list(intersect_path.iterdir())}")
+            contents = list(intersect_path.iterdir())
+            raise FileNotFoundError(
+                f"No intersected bed files found in {intersect_path}. "
+                f"Directory contains: {contents}")
         else:
-            print(f"Directory does not exist: {intersect_path}")
+            raise FileNotFoundError(
+                f"Directory does not exist: {intersect_path}")
 
     with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
         futures = [executor.submit(
