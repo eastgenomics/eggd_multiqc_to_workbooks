@@ -40,7 +40,7 @@ print(config_file)
 # set paths
 multiqc_path = Path("multiqc_inputs") / multiqc_folder
 reports_path = Path("reports_inputs") / reports_folder
-intersect_path = Path(intersect_folder)
+intersect_path = Path("intersected_beds") / intersect_folder
 
 print(multiqc_path)
 print(reports_path)
