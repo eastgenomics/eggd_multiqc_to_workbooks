@@ -172,6 +172,10 @@ def annotate_workbook(sample_row, reports_path):
 def create_combined_qc(multiqc_path):
     """
     Create one large table of all relevant QC metrics
+    Args:
+        multiqc_path (Path): path to multiqc folder
+    Returns:
+        combined_qc (df): dataframe of relevant QC metrics
     """
     # get general statistics, picard hs metrics and somalier
 
@@ -215,6 +219,12 @@ def create_combined_qc(multiqc_path):
 def get_min_depth_per_gene(intersect_path):
     """
     Parse intersected bed file to {gene: min_depth}, {gene: pos}
+
+    Args:
+        intersect_path (Path): path to intersected bed file
+    Returns:
+        gene_depths (dict): {gene: min_depth}
+        gene_pos (dict): {gene: pos}
     """
     gene_depths = {}
     gene_pos = {}
@@ -238,6 +248,15 @@ def get_min_depth_per_gene(intersect_path):
 def write_gene_depth_to_cell(worksheet, gene, depth, pos):
     """
     Find min depth for given gene and write it into the workbook
+
+    Args:
+        worksheet (openpyxl.Worksheet): worksheet to write to
+        gene (str): gene name
+        depth (int): minimum depth
+        pos (str): position
+    Returns:
+        depth (int): minimum depth
+        pos (str): position
     """
     gene_cells = config_file.get("cell_locations", {}).get(
         "gene_depths", {}).get(gene)
@@ -255,6 +274,10 @@ def write_gene_depth_to_cell(worksheet, gene, depth, pos):
 def process_workbooks(intersect_file, file_suffix, intersect_suffix):
     """
     Load each workbook and annotate with minimum depth per gene
+    Args:
+        intersect_file (Path): path to intersected bed file
+        file_suffix (str): suffix for annotated workbook
+        intersect_suffix (str): suffix for intersected bed file
     """
     sample = intersect_file.name.replace(intersect_suffix, "")
     workbook_path = Path(sample + file_suffix)
@@ -290,6 +313,10 @@ def process_workbooks(intersect_file, file_suffix, intersect_suffix):
 def annotate_gene_depths(intersect_path, file_suffix):
     """
     Annotate all workbooks with min depth for genes in intersected bed files.
+    Args:
+        intersect_path (Path): path to directory for intersected bed files
+        file_suffix (str): suffix for annotated workbook
+        intersect_suffix (str): suffix for intersected bed file
     """
     intersect_path = Path(intersect_path)
     files = list(intersect_path.glob(f"*{intersect_suffix}"))
