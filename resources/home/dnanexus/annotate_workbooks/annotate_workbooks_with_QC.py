@@ -185,6 +185,29 @@ def create_combined_qc(multiqc_path):
     return combined_qc
 
 
+def get_min_depth_per_gene(intersect_path):
+    """
+    Parse intersected bed file to {gene: min_depth}, {gene: pos}
+    """
+    gene_depths = {}
+    gene_pos = {}
+
+    with open(intersect_path) as f:
+        for line in f:
+            fields = line.strip().split("\t")
+            if len(fields) < 8:
+                continue
+            depth = int(fields[3])
+            gene = fields[7]
+            pos = fields[5]
+
+            if gene not in gene_depths or depth < gene_depths[gene]:
+                gene_depths[gene] = depth
+                gene_pos[gene] = pos
+
+    return gene_depths, gene_pos
+
+
 print("Beginning python")
 qc_table = create_combined_qc(multiqc_path)
 print(qc_table)
