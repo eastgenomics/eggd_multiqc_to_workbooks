@@ -254,8 +254,10 @@ def process_workbooks(intersect_file, file_suffix, intersect_suffix):
             if depth_result is None:
                 print(f"[WARN] Skipped {gene}: no cell location")
         sample_workbook.save(workbook_path)
-    except Exception as e:
-        print(f"Error processing {intersect_file.name}: {e}")
+    except (OSError, KeyError, ValueError) as e:
+        raise RuntimeError(
+            f"Error processing {intersect_file.name}"
+        ) from e
 
 
 def annotate_gene_depths(intersect_path, file_suffix):
