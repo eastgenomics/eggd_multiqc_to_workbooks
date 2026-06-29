@@ -79,13 +79,6 @@
       "label": "annotated reports",
       "class": "array:file",
       "help": ""
-    },
-    {
-      "name": "intersected_beds",
-      "label": "intersected beds",
-      "class": "array:file",
-      "optional": true,
-      "help": ""
     }
   ],
   "runSpec": {
