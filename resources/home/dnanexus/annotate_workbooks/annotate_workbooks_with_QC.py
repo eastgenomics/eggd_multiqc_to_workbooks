@@ -54,14 +54,15 @@ required_multiqc_files = {
     "sexcheck_file",
     "somalier_file"}
 
-missing = [
+missing_cell_locations = [
     f"cell_locations.{key}" for key in required_cells
     if not cell_locations.get(key)]
-missing += [
+missing_file_names = [
     f"multiqc_file_names.{key}" for key in required_multiqc_files
     if not multiqc_file_names.get(key)]
-if missing:
-    raise ValueError(f"Missing required config values: {', '.join(missing)}")
+if missing_cell_locations or missing_file_names:
+    raise ValueError(f"Missing required config values: {', '.join(
+        missing_cell_locations + missing_file_names)}")
 
 # set paths
 multiqc_path = Path("multiqc_inputs") / multiqc_folder
