@@ -19,15 +19,10 @@ set -exo pipefail
 
 main() {
 
-<<<<<<< HEAD
-    echo "Value of path_to_multiqc_folder: '$path_to_multiqc_folder'"
-    echo "Value of path_to_reports_folder: '$path_to_reports_folder'"
-=======
     echo "path_to_multiqc_folder: '$path_to_multiqc_folder'"
     echo "path_to_reports_folder: '$path_to_reports_folder'"
     echo "path_to_mosdepth_folder: '$path_to_mosdepth_folder'"
     echo "path_to_bedfile: '$path_to_bedfile'"
->>>>>>> 9f49931 (Accept config file path as argument)
     dx-download-all-inputs --parallel
     # Fill in your application code here.
     #
