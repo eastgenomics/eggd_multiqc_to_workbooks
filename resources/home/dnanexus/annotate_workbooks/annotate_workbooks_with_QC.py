@@ -17,8 +17,8 @@ parser.add_argument("--reports_folder",
                     help="Name of the reports folder under reports_inputs/")
 parser.add_argument("--intersect_folder",
                     help="Intersect folder name under intersected_beds/")
-parser.add_argument("--config_json",
-                    help="JSON string mapping metric names to cell addresses")
+parser.add_argument("--config",
+                    help="Path to config file with cell names and locations")
 parser.add_argument("--file_suffix",
                     help="string for customisable file suffix")
 parser.add_argument("--intersect_suffix", default=".intersect.bed",
@@ -28,12 +28,13 @@ args = parser.parse_args()
 multiqc_folder = args.multiqc_folder
 reports_folder = args.reports_folder
 intersect_folder = args.intersect_folder
-config_json = args.config_json
+config = args.config
 file_suffix = args.file_suffix
 intersect_suffix = args.intersect_suffix
 
 # read config string into dict
-config_file = json.loads(config_json)
+with open(config, "r") as f:
+    config_file = json.load(f)
 
 print(config_file)
 
