@@ -145,25 +145,16 @@ def annotate_workbook(sample_row, reports_path):
 
     worksheet = sample_workbook['summary']
 
-    # add "Somalier" to cell where header is currently added
+    # lookup cell locations and add data to sheet
+    cell_locations = config_file.get("cell_locations", {})
 
-    worksheet[config_file.get(
-        "cell_locations", {}).get("somalier_text")] = "Sex Check"
-
-    # add data to sheet
-    # want to pass cell locations in via a config for customisation
-    worksheet[config_file.get(
-        "cell_locations", {}).get("250_coverage")] = coverage_string
-    worksheet[config_file.get(
-        "cell_locations", {}).get("freemix")] = contamination_string
-    worksheet[config_file.get(
-        "cell_locations", {}).get("M_reads")] = total_reads_M_string
-    worksheet[config_file.get(
-        "cell_locations", {}).get("fold_80")] = fold80_string
-    worksheet[config_file.get(
-        "cell_locations", {}).get("insert_size")] = insert_size_string
-    worksheet[config_file.get(
-        "cell_locations", {}).get("somalier")] = sex_check_string
+    worksheet[cell_locations["somalier_text"]] = "Sex Check"
+    worksheet[cell_locations["250_coverage"]] = coverage_string
+    worksheet[cell_locations["freemix"]] = contamination_string
+    worksheet[cell_locations["M_reads"]] = total_reads_M_string
+    worksheet[cell_locations["fold80"]] = fold80_string
+    worksheet[cell_locations["insert_size"]] = insert_size_string
+    worksheet[cell_locations["somalier"]] = sex_check_string
 
     # save file
     new_path = sample + file_suffix
