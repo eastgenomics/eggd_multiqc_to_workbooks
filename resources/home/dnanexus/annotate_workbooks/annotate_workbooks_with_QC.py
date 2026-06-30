@@ -2,77 +2,33 @@ import pandas as pd
 import openpyxl
 import argparse
 import json
-import sys
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
 import os
+import logging
 
-# get paths from bash commandline arguments
-# improvement - use argparse
-parser = argparse.ArgumentParser(
-    description="Annotate sample workbooks with QC metrics")
-parser.add_argument("--multiqc_folder",
-                    help="Name of the MultiQC folder under multiqc_inputs/")
-parser.add_argument("--reports_folder",
-                    help="Name of the reports folder under reports_inputs/")
-parser.add_argument("--intersect_folder",
-                    help="Intersect folder name under intersected_beds/")
-parser.add_argument("--config",
-                    help="Path to config file with cell names and locations")
-parser.add_argument("--file_suffix",
-                    help="string for customisable file suffix")
-parser.add_argument("--intersect_suffix", default=".intersect.bed",
-                    help="suffix used to find intersected bed files")
-args = parser.parse_args()
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(process)d] %(levelname)s: %(message)s"
+)
 
-multiqc_folder = args.multiqc_folder
-reports_folder = args.reports_folder
-intersect_folder = args.intersect_folder
-config = args.config
-file_suffix = args.file_suffix
-intersect_suffix = args.intersect_suffix
 
-# read config string into dict
-with open(config, "r") as f:
-    config_file = json.load(f)
-
-print(config_file)
-
-cell_locations = config_file.get("cell_locations", {})
-multiqc_file_names = config_file.get("multiqc_file_names", {})
-required_cells = {
-    "250_coverage",
-    "freemix",
-    "M_reads",
-    "fold_80",
-    "insert_size",
-    "somalier",
-    "somalier_text",
-    "gene_depths"}
-required_multiqc_files = {
-    "general_stats_file",
-    "hsmetrics_file",
-    "sexcheck_file",
-    "somalier_file"}
-
-missing_cell_locations = [
-    f"cell_locations.{key}" for key in required_cells
-    if not cell_locations.get(key)]
-missing_file_names = [
-    f"multiqc_file_names.{key}" for key in required_multiqc_files
-    if not multiqc_file_names.get(key)]
-if missing_cell_locations or missing_file_names:
-    raise ValueError(f"Missing required config values: {', '.join(
-        missing_cell_locations + missing_file_names)}")
-
-# set paths
-multiqc_path = Path("multiqc_inputs") / multiqc_folder
-reports_path = Path("reports_inputs") / reports_folder
-intersect_path = Path("intersected_beds") / intersect_folder
-
-print(multiqc_path)
-print(reports_path)
-print(intersect_path)
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Annotate sample workbooks with QC metrics")
+    parser.add_argument("--multiqc_folder",
+                        help="Name of MultiQC folder under multiqc_inputs/")
+    parser.add_argument("--reports_folder",
+                        help="Name of reports folder under reports_inputs/")
+    parser.add_argument("--intersect_folder",
+                        help="Intersect folder name under intersected_beds/")
+    parser.add_argument("--config",
+                        help="Path to config file with cell name and location")
+    parser.add_argument("--file_suffix",
+                        help="string for customisable file suffix")
+    parser.add_argument("--intersect_suffix", default=".intersect.bed",
+                        help="suffix used to find intersected bed files")
+    return parser.parse_args()
 
 
 def annotate_workbook(sample_row, reports_path):
@@ -123,24 +79,23 @@ def annotate_workbook(sample_row, reports_path):
             sex_check = sample_row["matched"]
             sex_check_string = f"{sex_check}"
         except KeyError as err:
-            print(f"Sex check value not found {err}, looking for somalier")
+            logging.info(f"No sex check value {err}, looking for somalier")
             try:
                 sex_check = sample_row["Match_Sexes"]
                 sex_check_string = f"Somalier used. Sex match: {sex_check}"
             except KeyError as err:
-                print(f"[WARN] {err}: Column missing for {sample}; skipping")
+                logging.warning(f"{err}: Column missing for {sample}; skipped")
                 return
     except KeyError as err:
-        print(f"[WARN] {err}: Column missing for {sample}; skipping")
+        logging.warning(f"{err}: Column missing for {sample}; skipped")
         return
 
     # get workbook corresponding to sample
-    print(sample)
     path = reports_path / (sample + ".xlsx")
     try:
         sample_workbook = openpyxl.load_workbook(path)
     except FileNotFoundError:
-        print("No workbook found for ", sample)
+        logging.warning("No workbook found for ", sample)
         return
 
     worksheet = sample_workbook['summary']
@@ -184,22 +139,22 @@ def create_combined_qc(multiqc_path):
     try:
         sexcheck = pd.read_csv(sexcheck_path, sep="\t")
     except FileNotFoundError as e:
-        print(f"sexcheck not found: {e.filename}, looking for somalier")
+        logging.info(f"Sexcheck not found: {e.filename}, looking for somalier")
         try:
             # if sex check file does not exist, find somalier check
             sexcheck = pd.read_csv(somalier_path, sep="\t")
         except FileNotFoundError as e:
-            sys.exit(f"[ERROR] Required MultiQC file missing: {e.filename}")
+            logging.error(f"Required MultiQC file missing: {e.filename}")
     except pd.errors.ParserError as e:
-        sys.exit(f"[ERROR] Failed to parse MultiQC file: {e}")
+        logging.error(f"Failed to parse MultiQC file: {e}")
 
     try:
         general_stats = pd.read_csv(general_stats_path, sep="\t")
         hsmetrics = pd.read_csv(hsmetrics_path, sep="\t")
     except FileNotFoundError as e:
-        sys.exit(f"[ERROR] Required MultiQC file missing: {e.filename}")
+        logging.error(f"Required MultiQC file missing: {e.filename}")
     except pd.errors.ParserError as e:
-        sys.exit(f"[ERROR] Failed to parse MultiQC file: {e}")
+        logging.error(f"Failed to parse MultiQC file: {e}")
 
     # combine into one qc table
     hs_sexcheck = pd.merge(hsmetrics, sexcheck, on="Sample")
@@ -253,7 +208,7 @@ def write_gene_depth_to_cell(worksheet, gene, depth, pos):
     gene_cells = config_file.get("cell_locations", {}).get(
         "gene_depths", {}).get(gene)
     if gene_cells is None:
-        print(f"[WARN] No cell locations configured for {gene}; skipping")
+        logging.warning(f"No cell locations configured for {gene}; skipped")
         return None, None
 
     worksheet[gene_cells["depth_text"]] = f"{gene}"
@@ -274,13 +229,12 @@ def process_workbooks(intersect_file, file_suffix, intersect_suffix):
     sample = intersect_file.name.replace(intersect_suffix, "")
     workbook_path = Path(sample + file_suffix)
     if not workbook_path.exists():
-        print(f"[WARN] No annotated workbook found at {workbook_path}")
-        # continue
+        logging.warning(f"No annotated workbook found at {workbook_path}")
         return
 
     gene_depths, gene_pos = get_min_depth_per_gene(intersect_file)
     if not gene_depths:
-        print(f"[WARN] No genes found for {intersect_file.name}")
+        logging.warning(f"No genes found for {intersect_file.name}")
 
     try:
         sample_workbook = openpyxl.load_workbook(workbook_path)
@@ -294,7 +248,7 @@ def process_workbooks(intersect_file, file_suffix, intersect_suffix):
                 depth=depth,
                 pos=pos)
             if depth_result is None:
-                print(f"[WARN] Skipped {gene}: no cell location")
+                logging.warning(f"Skipped {gene}: no cell location")
         sample_workbook.save(workbook_path)
     except (OSError, KeyError, ValueError) as e:
         raise RuntimeError(
@@ -344,7 +298,7 @@ with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
     for f in futures:
         f.result()
 
-print("Reports annotated with run QC")
+    logging.info("Reports annotated with run QC")
 
 annotate_gene_depths(intersect_path, file_suffix)
 
