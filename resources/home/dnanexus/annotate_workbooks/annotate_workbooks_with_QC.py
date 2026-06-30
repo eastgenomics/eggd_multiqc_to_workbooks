@@ -16,17 +16,18 @@ logging.basicConfig(
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Annotate sample workbooks with QC metrics")
-    parser.add_argument("--multiqc_folder",
+    parser.add_argument("--multiqc_folder", required=True,
                         help="Name of MultiQC folder under multiqc_inputs/")
-    parser.add_argument("--reports_folder",
+    parser.add_argument("--reports_folder", required=True,
                         help="Name of reports folder under reports_inputs/")
-    parser.add_argument("--intersect_folder",
+    parser.add_argument("--intersect_folder", required=True,
                         help="Intersect folder name under intersected_beds/")
-    parser.add_argument("--config",
+    parser.add_argument("--config", required=True,
                         help="Path to config file with cell name and location")
-    parser.add_argument("--file_suffix",
+    parser.add_argument("--file_suffix", required=True,
                         help="string for customisable file suffix")
-    parser.add_argument("--intersect_suffix", default=".intersect.bed",
+    parser.add_argument("--intersect_suffix", required=True,
+                        default=".intersect.bed",
                         help="suffix used to find intersected bed files")
     return parser.parse_args()
 
