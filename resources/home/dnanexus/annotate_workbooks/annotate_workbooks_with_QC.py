@@ -181,6 +181,8 @@ def get_min_depth_per_gene(intersect_path):
             fields = line.strip().split("\t")
             if len(fields) < 8:
                 continue
+            # this assumes output from bedtools intersect run with
+            # -wa -wb mosdepth per base bed + target bed
             depth = int(fields[3])
             gene = fields[7]
             pos = fields[5]
