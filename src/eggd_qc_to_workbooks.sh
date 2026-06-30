@@ -70,15 +70,15 @@ main() {
     cd /home/dnanexus/
 
     mkdir /home/dnanexus/mosdepth_inputs
-	cd /home/dnanexus/mosdepth_inputs
+    cd /home/dnanexus/mosdepth_inputs
     dx find data --path "$path_to_mosdepth_folder" --name "*_markdup.per-base.bed.gz" --brief > /tmp/mosdepth_ids.txt
     cat /tmp/mosdepth_ids.txt | xargs -P 8 -n 1 dx download
-	cd /home/dnanexus/
+    cd /home/dnanexus/
     
-	mkdir /home/dnanexus/bedfile
-	cd /home/dnanexus/bedfile
-	dx download "$path_to_bedfile" -o bedfile.bed
-	cd /home/dnanexus
+    mkdir /home/dnanexus/bedfile
+    cd /home/dnanexus/bedfile
+    dx download "$path_to_bedfile" -o bedfile.bed
+    cd /home/dnanexus
 
     echo "running bedtools"
 	intersect_folder="/home/dnanexus/intersected_beds"
