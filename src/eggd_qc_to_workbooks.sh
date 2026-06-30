@@ -92,12 +92,13 @@ main() {
     while IFS= read -r -d '' bed; do
         sample=$(basename "$bed" _markdup.per-base.bed.gz)
         out_bed="/home/dnanexus/intersected_beds/${sample}.intersect.bed"
-        bedtools intersect -a "$bed" -b "/home/dnanexus/bedfile/bedfile.bed" -wa -wb > "$out_bed"
+        bedtools intersect -a "$bed" -b "/home/dnanexus/bedfile/bedfile.bed" -wa -wb > "$out_bed" &
         echo "Processed $sample -> $out_bed"
 
         job_count=$((job_count + 1))
         if (( job_count >= max_jobs )); then
             wait
+            job_count=0
         fi
     done < <(find /home/dnanexus/mosdepth_inputs -name "*_markdup.per-base.bed.gz" -print0)
 
