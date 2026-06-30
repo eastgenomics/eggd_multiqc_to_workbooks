@@ -287,21 +287,74 @@ def annotate_gene_depths(intersect_path, file_suffix):
             f.result()
 
 
-print("Beginning python")
-qc_table = create_combined_qc(multiqc_path)
-print(qc_table)
+def main():
+    global config_file, file_suffix, intersect_suffix
+    args = parse_args()
 
-with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
-    print(f"Using {os.cpu_count()} CPU cores")
-    futures = [
-        executor.submit(annotate_workbook, row, reports_path)
-        for _, row in qc_table.iterrows()
-    ]
-    for f in futures:
-        f.result()
+    multiqc_folder = args.multiqc_folder
+    reports_folder = args.reports_folder
+    intersect_folder = args.intersect_folder
+    config = args.config
+    file_suffix = args.file_suffix
+    intersect_suffix = args.intersect_suffix
+
+    # read config string into dict
+    with open(config, "r") as f:
+        config_file = json.load(f)
+
+    logging.info(f"Config: {config_file}")
+
+    # validate config
+    cell_locations = config_file.get("cell_locations", {})
+    multiqc_file_names = config_file.get("multiqc_file_names", {})
+
+    required_cells = {
+        "250_coverage", "freemix", "M_reads", "fold_80",
+        "insert_size", "somalier", "somalier_text", "gene_depths"
+    }
+    required_multiqc_files = {
+        "general_stats_file", "hsmetrics_file",
+        "sexcheck_file", "somalier_file"
+    }
+
+    missing_cell_locations = [
+        f"cell_locations.{key}" for key in required_cells
+        if not cell_locations.get(key)]
+    missing_file_names = [
+        f"multiqc_file_names.{key}" for key in required_multiqc_files
+        if not multiqc_file_names.get(key)]
+    if missing_cell_locations or missing_file_names:
+        raise ValueError(f"Missing required config values: {', '.join(
+            missing_cell_locations + missing_file_names)}")
+
+    # set paths
+    multiqc_path = Path("multiqc_inputs") / multiqc_folder
+    reports_path = Path("reports_inputs") / reports_folder
+    intersect_path = Path("intersected_beds") / intersect_folder
+
+    logging.info(f"MultiQC path: {multiqc_path}")
+    logging.info(f"Reports path: {reports_path}")
+    logging.info(f"Intersected beds path: {intersect_path}")
+
+    logging.info("Beginning python")
+    qc_table = create_combined_qc(multiqc_path)
+    logging.info(qc_table)
+
+    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+        logging.info(f"Using {os.cpu_count()} CPU cores")
+        futures = [
+            executor.submit(annotate_workbook, row, reports_path)
+            for _, row in qc_table.iterrows()
+        ]
+        for f in futures:
+            f.result()
 
     logging.info("Reports annotated with run QC")
 
-annotate_gene_depths(intersect_path, file_suffix)
+    annotate_gene_depths(intersect_path, file_suffix)
 
-print("Reports annotated with gene depths")
+    logging.info("Reports annotated with gene depths")
+
+
+if __name__ == "__main__":
+    main()
