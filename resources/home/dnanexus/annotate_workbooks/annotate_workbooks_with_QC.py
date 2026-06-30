@@ -95,7 +95,7 @@ def annotate_workbook(sample_row, reports_path):
     try:
         sample_workbook = openpyxl.load_workbook(path)
     except FileNotFoundError:
-        logging.warning("No workbook found for ", sample)
+        logging.warning(f"No workbook found for {sample}")
         return
 
     worksheet = sample_workbook['summary']
@@ -107,7 +107,7 @@ def annotate_workbook(sample_row, reports_path):
     worksheet[cell_locations["250_coverage"]] = coverage_string
     worksheet[cell_locations["freemix"]] = contamination_string
     worksheet[cell_locations["M_reads"]] = total_reads_M_string
-    worksheet[cell_locations["fold80"]] = fold80_string
+    worksheet[cell_locations["fold_80"]] = fold80_string
     worksheet[cell_locations["insert_size"]] = insert_size_string
     worksheet[cell_locations["somalier"]] = sex_check_string
 
@@ -145,16 +145,20 @@ def create_combined_qc(multiqc_path):
             sexcheck = pd.read_csv(somalier_path, sep="\t")
         except FileNotFoundError as e:
             logging.error(f"Required MultiQC file missing: {e.filename}")
+            raise
     except pd.errors.ParserError as e:
         logging.error(f"Failed to parse MultiQC file: {e}")
+        raise
 
     try:
         general_stats = pd.read_csv(general_stats_path, sep="\t")
         hsmetrics = pd.read_csv(hsmetrics_path, sep="\t")
     except FileNotFoundError as e:
         logging.error(f"Required MultiQC file missing: {e.filename}")
+        raise
     except pd.errors.ParserError as e:
         logging.error(f"Failed to parse MultiQC file: {e}")
+        raise
 
     # combine into one qc table
     hs_sexcheck = pd.merge(hsmetrics, sexcheck, on="Sample")
@@ -324,8 +328,8 @@ def main():
         f"multiqc_file_names.{key}" for key in required_multiqc_files
         if not multiqc_file_names.get(key)]
     if missing_cell_locations or missing_file_names:
-        raise ValueError(f"Missing required config values: {', '.join(
-            missing_cell_locations + missing_file_names)}")
+        missing = ', '.join(missing_cell_locations + missing_file_names)
+        raise ValueError(f"Missing required config values: {missing}")
 
     # set paths
     multiqc_path = Path("multiqc_inputs") / multiqc_folder
