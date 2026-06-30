@@ -69,9 +69,8 @@ main() {
 
     mkdir /home/dnanexus/mosdepth_inputs
     cd /home/dnanexus/mosdepth_inputs
-    mosdepth_ids="$(mktmp)"
-    dx find data --path "$path_to_mosdepth_folder" --name "*_markdup.per-base.bed.gz" --brief > "$mosdepth_ids"
-    xargs -r -P 8 -n 1 dx download < "$mosdepth_ids"
+    dx find data --path "$path_to_mosdepth_folder" --name "*_markdup.per-base.bed.gz" --brief > /tmp/mosdepth_ids.txt
+    cat /tmp/mosdepth_ids.txt | xargs -P 8 -n 1 dx download
     cd /home/dnanexus/
     
     mkdir /home/dnanexus/bedfile
