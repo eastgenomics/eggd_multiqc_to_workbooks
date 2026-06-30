@@ -94,9 +94,8 @@ def annotate_workbook(sample_row, reports_path):
     path = reports_path / (sample + ".xlsx")
     try:
         sample_workbook = openpyxl.load_workbook(path)
-    except FileNotFoundError:
-        logging.warning(f"No workbook found for {sample}")
-        return
+    except FileNotFoundError as err:
+        raise FileNotFoundError(f"No workbook found for {sample}") from err
 
     worksheet = sample_workbook['summary']
 
@@ -342,7 +341,7 @@ def main():
 
     logging.info("Beginning python")
     qc_table = create_combined_qc(multiqc_path)
-    logging.info(qc_table)
+    logging.info(len(qc_table), len(qc_table.columns))
 
     with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
         logging.info(f"Using {os.cpu_count()} CPU cores")
