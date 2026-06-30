@@ -26,8 +26,7 @@ def parse_args():
                         help="Path to config file with cell name and location")
     parser.add_argument("--file_suffix", required=True,
                         help="string for customisable file suffix")
-    parser.add_argument("--intersect_suffix", required=True,
-                        default=".intersect.bed",
+    parser.add_argument("--intersect_suffix", default=".intersect.bed",
                         help="suffix used to find intersected bed files")
     return parser.parse_args()
 
