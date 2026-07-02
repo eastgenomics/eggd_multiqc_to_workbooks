@@ -341,7 +341,6 @@ def main():
 
     logging.info("Beginning python")
     qc_table = create_combined_qc(multiqc_path)
-    logging.info(len(qc_table), len(qc_table.columns))
 
     with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
         logging.info(f"Using {os.cpu_count()} CPU cores")
