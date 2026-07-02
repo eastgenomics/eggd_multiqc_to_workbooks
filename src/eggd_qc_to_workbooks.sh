@@ -19,8 +19,10 @@ set -exo pipefail
 
 main() {
 
-    echo "Value of path_to_multiqc_folder: '$path_to_multiqc_folder'"
-    echo "Value of path_to_reports_folder: '$path_to_reports_folder'"
+    echo "path_to_multiqc_folder: '$path_to_multiqc_folder'"
+    echo "path_to_reports_folder: '$path_to_reports_folder'"
+    echo "path_to_mosdepth_folder: '$path_to_mosdepth_folder'"
+    echo "path_to_bedfile: '$path_to_bedfile'"
     dx-download-all-inputs --parallel
     # Fill in your application code here.
     #
@@ -38,8 +40,6 @@ main() {
     # exit code will prematurely exit the script; if no error was
     # reported in the job_error.json file, then the failure reason
     # will be AppInternalError with a generic error message.
-    cells_to_edit=$(jq -r '.' "$config_file_path" )
-    #echo "$cells_to_edit"
 
     echo "environment setup"
 
@@ -61,24 +61,22 @@ main() {
     dx download -r "$path_to_multiqc_folder"
     cd /home/dnanexus/
 
-    # echo $(basename "$path_to_reports_folder")
     reports_folder=$(basename "$path_to_reports_folder")
-
     mkdir /home/dnanexus/reports_inputs
     cd /home/dnanexus/reports_inputs
     dx download -r "$path_to_reports_folder"
     cd /home/dnanexus/
 
     mkdir /home/dnanexus/mosdepth_inputs
-	cd /home/dnanexus/mosdepth_inputs
+    cd /home/dnanexus/mosdepth_inputs
     dx find data --path "$path_to_mosdepth_folder" --name "*_markdup.per-base.bed.gz" --brief > /tmp/mosdepth_ids.txt
     cat /tmp/mosdepth_ids.txt | xargs -P 8 -n 1 dx download
-	cd /home/dnanexus/
+    cd /home/dnanexus/
     
-	mkdir /home/dnanexus/bedfile
-	cd /home/dnanexus/bedfile
-	dx download "$path_to_bedfile" -o bedfile.bed
-	cd /home/dnanexus
+    mkdir /home/dnanexus/bedfile
+    cd /home/dnanexus/bedfile
+    dx download "$path_to_bedfile" -o bedfile.bed
+    cd /home/dnanexus
 
     echo "running bedtools"
 	intersect_folder="/home/dnanexus/intersected_beds"
@@ -90,12 +88,13 @@ main() {
     while IFS= read -r -d '' bed; do
         sample=$(basename "$bed" _markdup.per-base.bed.gz)
         out_bed="/home/dnanexus/intersected_beds/${sample}.intersect.bed"
-        bedtools intersect -a "$bed" -b "/home/dnanexus/bedfile/bedfile.bed" -wa -wb > "$out_bed"
+        bedtools intersect -a "$bed" -b "/home/dnanexus/bedfile/bedfile.bed" -wa -wb > "$out_bed" &
         echo "Processed $sample -> $out_bed"
 
         job_count=$((job_count + 1))
         if (( job_count >= max_jobs )); then
             wait
+            job_count=0
         fi
     done < <(find /home/dnanexus/mosdepth_inputs -name "*_markdup.per-base.bed.gz" -print0)
 
@@ -105,7 +104,7 @@ main() {
 
     python3 annotate_workbooks/annotate_workbooks_with_QC.py --multiqc_folder "$multiqc_folder" \
     --reports_folder "$reports_folder" --intersect_folder "$intersect_folder" \
-    --config_json "$cells_to_edit" --file_suffix "$file_suffix"
+    --config "$config_file_path" --file_suffix "$file_suffix"
     # The following line(s) use the utility dx-jobutil-add-output to format and
     # add output variables to your job's output as appropriate for the output
     # class.  Run "dx-jobutil-add-output -h" for more information on what it
