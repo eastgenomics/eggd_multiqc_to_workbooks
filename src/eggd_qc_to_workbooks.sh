@@ -69,8 +69,6 @@ main() {
     dx download -r "$path_to_reports_folder"
     cd /home/dnanexus/
 
-<<<<<<< HEAD
-=======
     mkdir /home/dnanexus/mosdepth_inputs
 	cd /home/dnanexus/mosdepth_inputs
     dx find data --path "$path_to_mosdepth_folder" --name "*_markdup.per-base.bed.gz" --brief > /tmp/mosdepth_ids.txt
@@ -103,7 +101,6 @@ main() {
 
     wait
 
->>>>>>> 40a5669 (Run bedtools intersect)
     echo "running python"
 
     python3 annotate_workbooks/annotate_workbooks_with_QC.py --multiqc_folder "$multiqc_folder" \

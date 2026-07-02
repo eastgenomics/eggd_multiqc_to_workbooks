@@ -32,7 +32,7 @@ If the data from the tool eggd_sex_check is available, this is added to cell spe
     - multiqc_picard_HsMetrics.txt
     - multiqc_multiqc_sex_check_table.txt or multiqc_somalier_sex_check.txt
 2. An excel workbook files to annotate with qc metrics, held in the same folder (given with input `-ipath_to_reports_folder`)
-3. Per sample mosdepth files should be held in the same folder (given with input `ipath_to_mosdepth_folder`)
+3. Per sample mosdepth files should be held in the same folder (given with input `-ipath_to_mosdepth_folder`)
 4. A reference BED file containing genomic locations for which depth metrics are required (given with input `-ipath_to_bedfile`)
 5. A json file containing the cells to update (given with input `-iconfig_file`)
 

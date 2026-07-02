@@ -61,8 +61,8 @@ missing_file_names = [
     f"multiqc_file_names.{key}" for key in required_multiqc_files
     if not multiqc_file_names.get(key)]
 if missing_cell_locations or missing_file_names:
-    raise ValueError(f"Missing required config values: {', '.join(
-        missing_cell_locations + missing_file_names)}")
+    missing = ', '.join(missing_cell_locations + missing_file_names)
+    raise ValueError(f"Missing required config values: {missing}")
 
 # set paths
 multiqc_path = Path("multiqc_inputs") / multiqc_folder
@@ -296,7 +296,7 @@ def process_workbooks(intersect_file, file_suffix, intersect_suffix):
 
         for gene, depth in gene_depths.items():
             pos = gene_pos[gene]
-            depth_result, pos_result = write_gene_depth_to_cell(
+            depth_result, _ = write_gene_depth_to_cell(
                 worksheet,
                 gene,
                 depth=depth,
