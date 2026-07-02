@@ -49,6 +49,12 @@ main() {
     sudo -H python3 -m pip install --no-index --no-deps /home/dnanexus/packages/*
     mkdir -p /home/dnanexus/out && sudo chmod 757 /home/dnanexus/out
 
+    if ! command -v bedtools >/dev/null 2>&1; then
+        echo "installing bedtools"
+        sudo apt-get update
+        sudo apt-get install -y bedtools
+    fi
+
     multiqc_folder=$(basename "$path_to_multiqc_folder")
     mkdir /home/dnanexus/multiqc_inputs
     cd /home/dnanexus/multiqc_inputs
@@ -63,9 +69,43 @@ main() {
     dx download -r "$path_to_reports_folder"
     cd /home/dnanexus/
 
+    mkdir /home/dnanexus/mosdepth_inputs
+	cd /home/dnanexus/mosdepth_inputs
+    dx find data --path "$path_to_mosdepth_folder" --name "*_markdup.per-base.bed.gz" --brief > /tmp/mosdepth_ids.txt
+    cat /tmp/mosdepth_ids.txt | xargs -P 8 -n 1 dx download
+	cd /home/dnanexus/
+    
+	mkdir /home/dnanexus/bedfile
+	cd /home/dnanexus/bedfile
+	dx download "$path_to_bedfile" -o bedfile.bed
+	cd /home/dnanexus
+
+    echo "running bedtools"
+	intersect_folder="/home/dnanexus/intersected_beds"
+    mkdir -p "$intersect_folder"
+
+    max_jobs=$(nproc)
+    job_count=0
+
+    while IFS= read -r -d '' bed; do
+        sample=$(basename "$bed" _markdup.per-base.bed.gz)
+        out_bed="/home/dnanexus/intersected_beds/${sample}.intersect.bed"
+        bedtools intersect -a "$bed" -b "/home/dnanexus/bedfile/bedfile.bed" -wa -wb > "$out_bed"
+        echo "Processed $sample -> $out_bed"
+
+        job_count=$((job_count + 1))
+        if (( job_count >= max_jobs )); then
+            wait
+        fi
+    done < <(find /home/dnanexus/mosdepth_inputs -name "*_markdup.per-base.bed.gz" -print0)
+
+    wait
+
     echo "running python"
 
-    python3 annotate_workbooks/annotate_workbooks_with_QC.py --multiqc_folder "$multiqc_folder" --reports_folder "$reports_folder" --config_json "$cells_to_edit" --file_suffix "$file_suffix"
+    python3 annotate_workbooks/annotate_workbooks_with_QC.py --multiqc_folder "$multiqc_folder" \
+    --reports_folder "$reports_folder" --intersect_folder "$intersect_folder" \
+    --config_json "$cells_to_edit" --file_suffix "$file_suffix"
     # The following line(s) use the utility dx-jobutil-add-output to format and
     # add output variables to your job's output as appropriate for the output
     # class.  Run "dx-jobutil-add-output -h" for more information on what it

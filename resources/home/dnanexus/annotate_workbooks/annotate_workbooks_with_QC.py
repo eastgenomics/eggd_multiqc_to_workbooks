@@ -4,37 +4,75 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor
+import os
 
 # get paths from bash commandline arguments
 # improvement - use argparse
 parser = argparse.ArgumentParser(
-    description="Annotate sample workbooks with QC metrics extracted from MultiQC outputs.")
+    description="Annotate sample workbooks with QC metrics")
 parser.add_argument("--multiqc_folder",
-                     help="Name of the MultiQC folder under multiqc_inputs/")
+                    help="Name of the MultiQC folder under multiqc_inputs/")
 parser.add_argument("--reports_folder",
                     help="Name of the reports folder under reports_inputs/")
+parser.add_argument("--intersect_folder",
+                    help="Intersect folder name under intersected_beds/")
 parser.add_argument("--config_json",
                     help="JSON string mapping metric names to cell addresses")
 parser.add_argument("--file_suffix",
                     help="string for customisable file suffix")
+parser.add_argument("--intersect_suffix", default=".intersect.bed",
+                    help="suffix used to find intersected bed files")
 args = parser.parse_args()
 
 multiqc_folder = args.multiqc_folder
 reports_folder = args.reports_folder
+intersect_folder = args.intersect_folder
 config_json = args.config_json
 file_suffix = args.file_suffix
+intersect_suffix = args.intersect_suffix
 
 # read config string into dict
-config_file=json.loads(config_json)
+config_file = json.loads(config_json)
 
 print(config_file)
+
+cell_locations = config_file.get("cell_locations", {})
+multiqc_file_names = config_file.get("multiqc_file_names", {})
+required_cells = {
+    "250_coverage",
+    "freemix",
+    "M_reads",
+    "fold_80",
+    "insert_size",
+    "somalier",
+    "somalier_text",
+    "gene_depths"}
+required_multiqc_files = {
+    "general_stats_file",
+    "hsmetrics_file",
+    "sexcheck_file",
+    "somalier_file"}
+
+missing_cell_locations = [
+    f"cell_locations.{key}" for key in required_cells
+    if not cell_locations.get(key)]
+missing_file_names = [
+    f"multiqc_file_names.{key}" for key in required_multiqc_files
+    if not multiqc_file_names.get(key)]
+if missing_cell_locations or missing_file_names:
+    missing = ', '.join(missing_cell_locations + missing_file_names)
+    raise ValueError(f"Missing required config values: {missing}")
 
 # set paths
 multiqc_path = Path("multiqc_inputs") / multiqc_folder
 reports_path = Path("reports_inputs") / reports_folder
+intersect_path = Path("intersected_beds") / intersect_folder
 
 print(multiqc_path)
 print(reports_path)
+print(intersect_path)
+
 
 def annotate_workbook(sample_row, reports_path):
     """
@@ -54,8 +92,8 @@ def annotate_workbook(sample_row, reports_path):
             )
         coverage_string = f"{coverage}%"
 
-       # The freeMix score is % contamination predicted
-       # conversion to percentage is now calculated during multiqc
+        # The freeMix score is % contamination predicted
+        # conversion to percentage is now calculated during multiqc
         contamination = round(
             (sample_row[
                 "verifybamid-FREEMIX"
@@ -69,8 +107,10 @@ def annotate_workbook(sample_row, reports_path):
                 "samtools_flagstat-mapped_passed"
                 ]), 1
             )
+        total_reads_M_string = f"{total_reads_M}"
 
-        fold80 = round(sample_row["FOLD_80_BASE_PENALTY"],1)
+        fold80 = round(sample_row["FOLD_80_BASE_PENALTY"], 1)
+        fold80_string = f"{fold80}"
 
         insert_size = int(sample_row[
             "picard_insertsizemetrics-summed_median"
@@ -82,15 +122,15 @@ def annotate_workbook(sample_row, reports_path):
             sex_check = sample_row["matched"]
             sex_check_string = f"{sex_check}"
         except KeyError as err:
-            print("Sex check value no found, looking for somalier")
+            print(f"Sex check value not found {err}, looking for somalier")
             try:
                 sex_check = sample_row["Match_Sexes"]
                 sex_check_string = f"Somalier used. Sex match: {sex_check}"
             except KeyError as err:
-                print(f"[WARN] Column {err} missing for sample {sample}; skipping row.")
+                print(f"[WARN] {err}: Column missing for {sample}; skipping")
                 return
     except KeyError as err:
-        print(f"[WARN] Column {err} missing for sample {sample}; skipping row.")
+        print(f"[WARN] {err}: Column missing for {sample}; skipping")
         return
 
     # get workbook corresponding to sample
@@ -106,40 +146,56 @@ def annotate_workbook(sample_row, reports_path):
 
     # add "Somalier" to cell where header is currently added
 
-    worksheet[config_file.get("cell_locations",{}).get("somalier_text")] = "Sex Check"
+    worksheet[config_file.get(
+        "cell_locations", {}).get("somalier_text")] = "Sex Check"
 
     # add data to sheet
     # want to pass cell locations in via a config for customisation
-    worksheet[config_file.get("cell_locations",{}).get("250_coverage")] = coverage_string
-    worksheet[config_file.get("cell_locations",{}).get("freemix")] = contamination_string
-    worksheet[config_file.get("cell_locations",{}).get("M_reads")] = total_reads_M
-    worksheet[config_file.get("cell_locations",{}).get("fold_80")] = fold80
-    worksheet[config_file.get("cell_locations",{}).get("insert_size")] = insert_size_string
-    worksheet[config_file.get("cell_locations",{}).get("somalier")] = sex_check_string
+    worksheet[config_file.get(
+        "cell_locations", {}).get("250_coverage")] = coverage_string
+    worksheet[config_file.get(
+        "cell_locations", {}).get("freemix")] = contamination_string
+    worksheet[config_file.get(
+        "cell_locations", {}).get("M_reads")] = total_reads_M_string
+    worksheet[config_file.get(
+        "cell_locations", {}).get("fold_80")] = fold80_string
+    worksheet[config_file.get(
+        "cell_locations", {}).get("insert_size")] = insert_size_string
+    worksheet[config_file.get(
+        "cell_locations", {}).get("somalier")] = sex_check_string
 
     # save file
-    new_path= sample + file_suffix
+    new_path = sample + file_suffix
     sample_workbook.save(new_path)
+
 
 def create_combined_qc(multiqc_path):
     """
     Create one large table of all relevant QC metrics
+    Args:
+        multiqc_path (Path): path to multiqc folder
+    Returns:
+        combined_qc (df): dataframe of relevant QC metrics
     """
     # get general statistics, picard hs metrics and somalier
 
-    general_stats_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("general_stats_file")
-    hsmetrics_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("hsmetrics_file")
-    sexcheck_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("sexcheck_file")
-    somalier_path = multiqc_path / config_file.get("multiqc_file_names",{}).get("somalier_file")
+    general_stats_path = multiqc_path / config_file.get(
+        "multiqc_file_names", {}).get("general_stats_file")
+    hsmetrics_path = multiqc_path / config_file.get(
+        "multiqc_file_names", {}).get("hsmetrics_file")
+    sexcheck_path = multiqc_path / config_file.get(
+        "multiqc_file_names", {}).get("sexcheck_file")
+    somalier_path = multiqc_path / config_file.get(
+        "multiqc_file_names", {}).get("somalier_file")
 
     # try finding sex check data, if not produced try somalier
     try:
-        sexcheck  = pd.read_csv(sexcheck_path, sep="\t")
+        sexcheck = pd.read_csv(sexcheck_path, sep="\t")
     except FileNotFoundError as e:
-        print("sexcheck not found, looking for somalier")
+        print(f"sexcheck not found: {e.filename}, looking for somalier")
         try:
             # if sex check file does not exist, find somalier check
-            sexcheck  = pd.read_csv(somalier_path, sep="\t")
+            sexcheck = pd.read_csv(somalier_path, sep="\t")
         except FileNotFoundError as e:
             sys.exit(f"[ERROR] Required MultiQC file missing: {e.filename}")
     except pd.errors.ParserError as e:
@@ -159,11 +215,145 @@ def create_combined_qc(multiqc_path):
 
     return combined_qc
 
+
+def get_min_depth_per_gene(intersect_path):
+    """
+    Parse intersected bed file to {gene: min_depth}, {gene: pos}
+
+    Args:
+        intersect_path (Path): path to intersected bed file
+    Returns:
+        gene_depths (dict): {gene: min_depth}
+        gene_pos (dict): {gene: pos}
+    """
+    gene_depths = {}
+    gene_pos = {}
+
+    with open(intersect_path) as f:
+        for line in f:
+            fields = line.strip().split("\t")
+            if len(fields) < 8:
+                continue
+            depth = int(fields[3])
+            gene = fields[7]
+            pos = fields[5]
+
+            if gene not in gene_depths or depth < gene_depths[gene]:
+                gene_depths[gene] = depth
+                gene_pos[gene] = pos
+
+    return gene_depths, gene_pos
+
+
+def write_gene_depth_to_cell(worksheet, gene, depth, pos):
+    """
+    Find min depth for given gene and write it into the workbook
+
+    Args:
+        worksheet (openpyxl.Worksheet): worksheet to write to
+        gene (str): gene name
+        depth (int): minimum depth
+        pos (str): position
+    Returns:
+        depth (int): minimum depth
+        pos (str): position
+    """
+    gene_cells = config_file.get("cell_locations", {}).get(
+        "gene_depths", {}).get(gene)
+    if gene_cells is None:
+        print(f"[WARN] No cell locations configured for {gene}; skipping")
+        return None, None
+
+    worksheet[gene_cells["depth_text"]] = f"{gene}"
+
+    worksheet[gene_cells["min_depth"]] = f"{pos}: {depth}x"
+
+    return depth, pos
+
+
+def process_workbooks(intersect_file, file_suffix, intersect_suffix):
+    """
+    Load each workbook and annotate with minimum depth per gene
+    Args:
+        intersect_file (Path): path to intersected bed file
+        file_suffix (str): suffix for annotated workbook
+        intersect_suffix (str): suffix for intersected bed file
+    """
+    sample = intersect_file.name.replace(intersect_suffix, "")
+    workbook_path = Path(sample + file_suffix)
+    if not workbook_path.exists():
+        print(f"[WARN] No annotated workbook found at {workbook_path}")
+        # continue
+        return
+
+    gene_depths, gene_pos = get_min_depth_per_gene(intersect_file)
+    if not gene_depths:
+        print(f"[WARN] No genes found for {intersect_file.name}")
+
+    try:
+        sample_workbook = openpyxl.load_workbook(workbook_path)
+        worksheet = sample_workbook["summary"]
+
+        for gene, depth in gene_depths.items():
+            pos = gene_pos[gene]
+            depth_result, _ = write_gene_depth_to_cell(
+                worksheet,
+                gene,
+                depth=depth,
+                pos=pos)
+            if depth_result is None:
+                print(f"[WARN] Skipped {gene}: no cell location")
+        sample_workbook.save(workbook_path)
+    except (OSError, KeyError, ValueError) as e:
+        raise RuntimeError(
+            f"Error processing {intersect_file.name}"
+        ) from e
+
+
+def annotate_gene_depths(intersect_path, file_suffix):
+    """
+    Annotate all workbooks with min depth for genes in intersected bed files.
+    Args:
+        intersect_path (Path): path to directory for intersected bed files
+        file_suffix (str): suffix for annotated workbook
+        intersect_suffix (str): suffix for intersected bed file
+    """
+    intersect_path = Path(intersect_path)
+    files = list(intersect_path.glob(f"*{intersect_suffix}"))
+    if not files:
+        if intersect_path.exists():
+            contents = list(intersect_path.iterdir())
+            raise FileNotFoundError(
+                f"No intersected bed files found in {intersect_path}. "
+                f"Directory contains: {contents}")
+        else:
+            raise FileNotFoundError(
+                f"Directory does not exist: {intersect_path}")
+
+    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+        futures = [executor.submit(
+            process_workbooks, intersect_file, file_suffix, intersect_suffix)
+            for intersect_file in files
+        ]
+        for f in futures:
+            f.result()
+
+
 print("Beginning python")
 qc_table = create_combined_qc(multiqc_path)
 print(qc_table)
-qc_table.apply(annotate_workbook, axis=1, reports_path = reports_path)
 
-print("Reports annotated")
+with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+    print(f"Using {os.cpu_count()} CPU cores")
+    futures = [
+        executor.submit(annotate_workbook, row, reports_path)
+        for _, row in qc_table.iterrows()
+    ]
+    for f in futures:
+        f.result()
 
+print("Reports annotated with run QC")
 
+annotate_gene_depths(intersect_path, file_suffix)
+
+print("Reports annotated with gene depths")
