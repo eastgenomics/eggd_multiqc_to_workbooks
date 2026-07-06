@@ -216,7 +216,7 @@ def write_gene_depth_to_cell(worksheet, gene, depth, pos):
         logging.warning(f"No cell locations configured for {gene}; skipped")
         return None, None
 
-    worksheet[gene_cells["depth_text"]] = f"{gene}"
+    worksheet[gene_cells["depth_text"]] = gene_cells.get("label", gene)
 
     worksheet[gene_cells["min_depth"]] = f"{pos}: {depth}x"
 
