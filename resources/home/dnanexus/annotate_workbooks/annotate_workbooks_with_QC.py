@@ -197,7 +197,7 @@ def get_min_depth_per_gene(intersect_path):
     with open(intersect_path) as f:
         for line in f:
             fields = line.strip().split("\t")
-            if len(fields) < 8:
+            if len(fields) < 9:
                 continue
             # this assumes output from bedtools intersect run with
             # -wa -wb mosdepth per base bed + target bed
@@ -205,7 +205,7 @@ def get_min_depth_per_gene(intersect_path):
             start = fields[5]
             end = fields[6]
             gene = fields[7]
-            pos = fields[5]
+            variant = fields[8]
 
             key = create_variant_key(gene, variant)
 
@@ -222,7 +222,7 @@ def write_gene_depth_to_cell(worksheet, key, depth, start, end):
 
     Args:
         worksheet (openpyxl.Worksheet): worksheet to write to
-        gene (str): gene name
+        key (str): unique key for gene and variant
         depth (int): minimum depth
         start (str): start position
         end (str): end position
@@ -232,10 +232,10 @@ def write_gene_depth_to_cell(worksheet, key, depth, start, end):
         end (str): end position
     """
     gene_cells = config_file.get("cell_locations", {}).get(
-        "gene_depths", {}).get(gene)
+        "gene_depths", {}).get(key)
     if gene_cells is None:
-        logging.warning(f"No cell locations configured for {gene}; skipped")
-        return None, None
+        logging.warning(f"No cell locations configured for {key}; skipped")
+        return None, None, None
 
     worksheet[gene_cells["depth_text"]] = key
 
@@ -283,7 +283,7 @@ def process_workbooks(intersect_file, file_suffix, intersect_suffix):
                 start=start,
                 end=end)
             if depth_result is None:
-                logging.warning(f"Skipped {gene}: no cell location")
+                logging.warning(f"Skipped {key}: no cell location")
         sample_workbook.save(workbook_path)
     except (OSError, KeyError, ValueError) as e:
         raise RuntimeError(
