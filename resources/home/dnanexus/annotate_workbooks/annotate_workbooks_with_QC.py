@@ -166,6 +166,21 @@ def create_combined_qc(multiqc_path):
     return combined_qc
 
 
+def create_variant_key(gene, variant):
+    """
+    Create a key for a gene and variant combination to match config
+
+    Args:
+        gene (str): gene name
+        variant (str): variant name
+    Returns:
+        key (str): unique key for gene and variant
+    """
+    if not variant or variant == ".":
+        return gene
+    return f"{gene}-{variant}"
+
+
 def get_min_depth_per_gene(intersect_path):
     """
     Parse intersected bed file to {gene: min_depth}, {gene: pos}
