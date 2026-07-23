@@ -183,13 +183,13 @@ def create_variant_key(gene, variant):
 
 def get_min_depth_per_gene(intersect_path):
     """
-    Parse intersected bed file to {gene: min_depth}, {gene: pos}
+    Parse intersected bed file to {gene: min_depth}, {gene: start, end}
 
     Args:
         intersect_path (Path): path to intersected bed file
     Returns:
         gene_depths (dict): {gene: min_depth}
-        gene_pos (dict): {gene: pos}
+        gene_pos (dict): {gene: start, end}
     """
     gene_depths = {}
     gene_pos = {}
@@ -202,17 +202,21 @@ def get_min_depth_per_gene(intersect_path):
             # this assumes output from bedtools intersect run with
             # -wa -wb mosdepth per base bed + target bed
             depth = int(fields[3])
+            start = fields[5]
+            end = fields[6]
             gene = fields[7]
             pos = fields[5]
 
-            if gene not in gene_depths or depth < gene_depths[gene]:
-                gene_depths[gene] = depth
-                gene_pos[gene] = pos
+            key = create_variant_key(gene, variant)
+
+            if key not in gene_depths or depth < gene_depths[key]:
+                gene_depths[key] = depth
+                gene_pos[key] = (start, end)
 
     return gene_depths, gene_pos
 
 
-def write_gene_depth_to_cell(worksheet, gene, depth, pos):
+def write_gene_depth_to_cell(worksheet, key, depth, start, end):
     """
     Find min depth for given gene and write it into the workbook
 
@@ -220,10 +224,12 @@ def write_gene_depth_to_cell(worksheet, gene, depth, pos):
         worksheet (openpyxl.Worksheet): worksheet to write to
         gene (str): gene name
         depth (int): minimum depth
-        pos (str): position
+        start (str): start position
+        end (str): end position
     Returns:
         depth (int): minimum depth
-        pos (str): position
+        start (str): start position
+        end (str): end position
     """
     gene_cells = config_file.get("cell_locations", {}).get(
         "gene_depths", {}).get(gene)
@@ -231,11 +237,19 @@ def write_gene_depth_to_cell(worksheet, gene, depth, pos):
         logging.warning(f"No cell locations configured for {gene}; skipped")
         return None, None
 
-    worksheet[gene_cells["depth_text"]] = gene_cells.get("label", gene)
+    worksheet[gene_cells["depth_text"]] = key
+
+    length = int(end) - int(start)
+    one_based_start = int(start) + 1
+
+    if length > 1:
+        pos = f"{one_based_start}-{end}"
+    else:
+        pos = f"{one_based_start}"
 
     worksheet[gene_cells["min_depth"]] = f"{pos}: {depth}x"
 
-    return depth, pos
+    return depth, start, end
 
 
 def process_workbooks(intersect_file, file_suffix, intersect_suffix):
@@ -260,13 +274,14 @@ def process_workbooks(intersect_file, file_suffix, intersect_suffix):
         sample_workbook = openpyxl.load_workbook(workbook_path)
         worksheet = sample_workbook["summary"]
 
-        for gene, depth in gene_depths.items():
-            pos = gene_pos[gene]
-            depth_result, _ = write_gene_depth_to_cell(
+        for key, depth in gene_depths.items():
+            start, end = gene_pos[key]
+            depth_result, _, _ = write_gene_depth_to_cell(
                 worksheet,
-                gene,
+                key,
                 depth=depth,
-                pos=pos)
+                start=start,
+                end=end)
             if depth_result is None:
                 logging.warning(f"Skipped {gene}: no cell location")
         sample_workbook.save(workbook_path)
