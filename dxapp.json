@@ -1,9 +1,9 @@
 {
-  "name": "eggd_multiqc_to_workbooks",
-  "title": "eggd_multiqc_to_workbooks",
+  "name": "eggd_qc_to_workbooks",
+  "title": "eggd_qc_to_workbooks",
   "summary": "A tool to identify multiqc files and add data to reports workbooks",
   "dxapi": "1.0.0",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "changeLog": [
     {
         "version": "1.0.0",
@@ -19,6 +19,11 @@
       "version": "1.0.2",
       "date": "2026-02-05",
       "description": "Fix column names for updated MultiQC outputs"
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-06-29",
+      "description": "Update to support adding depth metrics from mosdepth outputs"
     }
 ],
   "inputSpec": [
@@ -33,6 +38,21 @@
       "name": "path_to_reports_folder",
       "label": "path to folder containing reports",
       "class": "string",
+      "optional": false,
+      "help": ""
+    },
+    {
+      "name": "path_to_mosdepth_folder",
+      "label": "path to folder containing mosdepth data",
+      "class": "string",
+      "optional": false,
+      "help": ""
+    },
+    {
+      "name": "path_to_bedfile",
+      "label": "bedfile used for intersecting mosdepth data",
+      "class": "file",
+      "patterns": ["*.bed"],
       "optional": false,
       "help": ""
     },
@@ -81,7 +101,7 @@
       }
     ],
     "interpreter": "bash",
-    "file": "src/eggd_multiqc_to_workbooks.sh",
+    "file": "src/eggd_qc_to_workbooks.sh",
     "distribution": "Ubuntu",
     "release": "20.04",
     "version": "0"
