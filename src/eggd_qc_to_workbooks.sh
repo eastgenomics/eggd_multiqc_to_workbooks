@@ -91,9 +91,12 @@ main() {
 
     echo "running python"
 
-    python3 annotate_workbooks/annotate_workbooks_with_QC.py --multiqc_folder "$multiqc_folder" \
-    --reports_folder "$reports_folder" --intersect_folder "$intersect_folder" \
+    python3 annotate_workbooks/annotate_workbooks_with_QC.py \
+    --multiqc_folder /home/dnanexus/in/multiqc_files \
+    --reports_folder /home/dnanexus/in/reports \
+    --intersect_folder "$intersect_folder" \
     --config "$config_file_path" --file_suffix "$file_suffix"
+
     # The following line(s) use the utility dx-jobutil-add-output to format and
     # add output variables to your job's output as appropriate for the output
     # class.  Run "dx-jobutil-add-output -h" for more information on what it
