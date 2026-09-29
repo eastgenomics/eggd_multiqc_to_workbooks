@@ -56,12 +56,7 @@ main() {
         sudo apt-get install -y bedtools
     fi
 
-    multiqc_folder=$(basename "$path_to_multiqc_folder")
-    mkdir /home/dnanexus/multiqc_inputs
-    cd /home/dnanexus/multiqc_inputs
-    dx download -r "$path_to_multiqc_folder"
-    cd /home/dnanexus/
-
+    
     reports_folder=$(basename "$path_to_reports_folder")
     mkdir /home/dnanexus/reports_inputs
     cd /home/dnanexus/reports_inputs
