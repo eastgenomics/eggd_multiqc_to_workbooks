@@ -23,7 +23,7 @@ main() {
     echo "path_to_reports_folder: '$path_to_reports_folder'"
     echo "path_to_mosdepth_folder: '$path_to_mosdepth_folder'"
     echo "path_to_bedfile: '$path_to_bedfile'"
-    dx-download-all-inputs --parallel
+    dx-download-all-inputs --parallel --flatten
     # Fill in your application code here.
     #
     # To report any recognized errors in the correct format in
