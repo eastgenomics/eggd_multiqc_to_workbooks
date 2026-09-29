@@ -68,6 +68,12 @@ main() {
     max_jobs=$(nproc)
     job_count=0
 
+    # fail early if no mosdepth per-base files were provided, rather than
+    # silently intersecting nothing and failing later in python
+    if [[ -z "$(find /home/dnanexus/in/mosdepth_files -name "*_markdup.per-base.bed.gz" -print -quit)" ]]; then
+        dx-jobutil-report-error "No *_markdup.per-base.bed.gz files found in mosdepth_files input"
+    fi
+
     while IFS= read -r -d '' bed; do
         sample=$(basename "$bed" _markdup.per-base.bed.gz)
         out_bed="/home/dnanexus/intersected_beds/${sample}.intersect.bed"
