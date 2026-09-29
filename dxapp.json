@@ -32,7 +32,7 @@
     }
 ],
   "inputSpec": [
-      {
+    {
       "name": "multiqc_files",
       "label": "MultiQC data txt files",
       "class": "array:file",
