@@ -79,7 +79,7 @@ main() {
             wait
             job_count=0
         fi
-    done < <(find /home/dnanexus/mosdepth_inputs -name "*_markdup.per-base.bed.gz" -print0)
+    done < <(find /home/dnanexus/in/mosdepth_files -name "*_markdup.per-base.bed.gz" -print0)
 
     wait
 
