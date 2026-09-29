@@ -32,12 +32,13 @@
     }
 ],
   "inputSpec": [
-    {
-      "name": "path_to_multiqc_folder",
-      "label": "path to folder containing multiqc txt data",
-      "class": "string",
+        {
+      "name": "multiqc_files",
+      "label": "MultiQC data txt files",
+      "class": "array:file",
+      "patterns": ["*.txt"],
       "optional": false,
-      "help": ""
+      "help": "MultiQC txt data files from the multiqc_data folder. Must include multiqc_general_stats.txt, multiqc_picard_HsMetrics.txt and either multiqc_multiqc_sex_check_table.txt or multiqc_somalier_sex_check.txt"
     },
     {
       "name": "path_to_reports_folder",
