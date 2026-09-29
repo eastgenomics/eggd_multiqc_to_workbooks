@@ -19,10 +19,11 @@ set -exo pipefail
 
 main() {
 
-    echo "path_to_multiqc_folder: '$path_to_multiqc_folder'"
-    echo "path_to_reports_folder: '$path_to_reports_folder'"
-    echo "path_to_mosdepth_folder: '$path_to_mosdepth_folder'"
+    echo "multiqc_files (${#multiqc_files_name[@]} files): ${multiqc_files_name[*]}"
+    echo "reports (${#reports_name[@]} files): ${reports_name[*]}"
+    echo "mosdepth_files (${#mosdepth_files_name[@]} files): ${mosdepth_files_name[*]}"
     echo "path_to_bedfile: '$path_to_bedfile'"
+
     dx-download-all-inputs --parallel --flatten
     # Fill in your application code here.
     #
