@@ -56,13 +56,6 @@ main() {
         sudo apt-get install -y bedtools
     fi
 
-    
-    reports_folder=$(basename "$path_to_reports_folder")
-    mkdir /home/dnanexus/reports_inputs
-    cd /home/dnanexus/reports_inputs
-    dx download -r "$path_to_reports_folder"
-    cd /home/dnanexus/
-
     mkdir /home/dnanexus/mosdepth_inputs
     cd /home/dnanexus/mosdepth_inputs
     dx find data --path "$path_to_mosdepth_folder" --name "*_markdup.per-base.bed.gz" --brief > /tmp/mosdepth_ids.txt
