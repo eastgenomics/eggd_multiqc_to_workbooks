@@ -361,9 +361,9 @@ def main():
         raise ValueError(f"Missing required config values: {missing}")
 
     # set paths
-    multiqc_path = Path("multiqc_inputs") / multiqc_folder
-    reports_path = Path("reports_inputs") / reports_folder
-    intersect_path = Path("intersected_beds") / intersect_folder
+    multiqc_path = Path(multiqc_folder)
+    reports_path = Path(reports_folder)
+    intersect_path = Path(intersect_folder)
 
     logging.info(f"MultiQC path: {multiqc_path}")
     logging.info(f"Reports path: {reports_path}")
