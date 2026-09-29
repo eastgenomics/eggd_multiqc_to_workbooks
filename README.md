@@ -21,7 +21,7 @@ From these files the following metrics are found and added to the workbooks:
 
 The tool also adds the text "Sex Check" in the summary page of the workbook to the cell specified by the config file. This is done as  currently the text "Somalier" is added manually by scientists when processing the workbooks, but the lab will move to using the tool Sex Check in the next release.
 
-If the data from the tool eggd_sex_check is available, this is added to cell specified in the config file. If Unavailable, but data from somalier is available, the output od somalier will be added with the text "Somalier used. Sex match:". Data is from somalier is added to B20, but currently the "Somalier text" is added manually by scientists when processing the workbooks.
+If the data from the tool eggd_sex_check is available, this is added to cell specified in the config file. If Unavailable, but data from somalier is available, the output of somalier will be added with the text "Somalier used. Sex match:". Data is from somalier is added to B20, but currently the "Somalier text" is added manually by scientists when processing the workbooks.
 
 ## What data are required for this app to run? ##
 
