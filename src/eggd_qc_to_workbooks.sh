@@ -62,7 +62,7 @@ main() {
     cd /home/dnanexus
 
     echo "running bedtools"
-	intersect_folder="/home/dnanexus/intersected_beds"
+    intersect_folder="/home/dnanexus/intersected_beds"
     mkdir -p "$intersect_folder"
 
     max_jobs=$(nproc)
