@@ -3,7 +3,7 @@
   "title": "eggd_qc_to_workbooks",
   "summary": "A tool to identify multiqc files and add data to reports workbooks",
   "dxapi": "1.0.0",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "changeLog": [
     {
         "version": "1.0.0",
@@ -24,6 +24,11 @@
       "version": "1.1.0",
       "date": "2026-06-29",
       "description": "Update to support adding depth metrics from mosdepth outputs"
+    }
+    {
+      "version": "1.1.1",
+      "date": "2026-09-29",
+      "description": "Update to enable automated processing via conductor using file arrays instead of paths"
     }
 ],
   "inputSpec": [
