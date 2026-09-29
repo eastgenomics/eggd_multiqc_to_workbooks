@@ -49,12 +49,13 @@
       "help": "Excel workbooks from eggd_generate_variant_workbook, one per sample. Each file must be named <sample>.xlsx to match the Sample column in the MultiQC data"
     },
     {
-      "name": "path_to_mosdepth_folder",
-      "label": "path to folder containing mosdepth data",
-      "class": "string",
+      "name": "mosdepth_files",
+      "label": "mosdepth per-base bed files",
+      "class": "array:file",
+      "patterns": ["*_markdup.per-base.bed.gz"],
       "optional": false,
-      "help": ""
-    },
+      "help": "Per-sample per-base bed files from eggd_mosdepth, named <sample>_markdup.per-base.bed.gz. Other mosdepth outputs are ignored"
+    }, 
     {
       "name": "path_to_bedfile",
       "label": "bedfile used for intersecting mosdepth data",
