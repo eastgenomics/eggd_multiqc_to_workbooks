@@ -24,7 +24,18 @@ main() {
     echo "mosdepth_files (${#mosdepth_files_name[@]} files): ${mosdepth_files_name[*]}"
     echo "path_to_bedfile: '$path_to_bedfile'"
 
-    dx-download-all-inputs --parallel --flatten
+    dx-download-all-inputs --parallel
+
+    # array inputs download to ~/in/<input>/<index>/<file>; move the files up
+    # into ~/in/<input>/ so each input's files are in one folder
+    for input in multiqc_files reports mosdepth_files; do
+        find "/home/dnanexus/in/${input}" -mindepth 2 -type f \
+            -exec mv -n -t "/home/dnanexus/in/${input}" {} +
+        if [[ -n "$(find "/home/dnanexus/in/${input}" -mindepth 2 -type f -print -quit)" ]]; then
+            dx-jobutil-report-error "Duplicate file names found in ${input} input"
+        fi
+    done
+
     # Fill in your application code here.
     #
     # To report any recognized errors in the correct format in
