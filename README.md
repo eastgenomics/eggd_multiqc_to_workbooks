@@ -7,7 +7,7 @@ eggd_qc_to_workbooks finds the multiqc and mosdepth data files corresponding to 
 Currently the app looks for:
 - multiqc_general_stats.txt
 - multiqc_picard_HsMetrics.txt
-- multiqc_multiqc_sex_check_table.txt, if unavailable then multiqc_somalier_sex_check.txt
+- multiqc_sex_check_table.txt, if unavailable then multiqc_somalier_sex_check.txt
 - <sample>_markdup.per-base.bed.gz
 
 From these files the following metrics are found and added to the workbooks:
@@ -30,7 +30,7 @@ If the data from the tool eggd_sex_check is available, this is added to cell spe
 1. The following files should be held in the same folder (given with input `-ipath_to_multiqc_folder` )
     - multiqc_general_stats.txt
     - multiqc_picard_HsMetrics.txt
-    - multiqc_multiqc_sex_check_table.txt or multiqc_somalier_sex_check.txt
+    - multiqc_sex_check_table.txt or multiqc_somalier_sex_check.txt
 2. An excel workbook files to annotate with qc metrics, held in the same folder (given with input `-ipath_to_reports_folder`)
 3. Per sample mosdepth files should be held in the same folder (given with input `-ipath_to_mosdepth_folder`)
 4. A reference BED file containing genomic locations for which depth metrics are required (given with input `-ipath_to_bedfile`)
