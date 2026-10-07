@@ -38,7 +38,7 @@
       "class": "array:file",
       "patterns": ["*.txt"],
       "optional": false,
-      "help": "MultiQC txt data files from the multiqc_data folder. Must include multiqc_general_stats.txt, multiqc_picard_HsMetrics.txt and either multiqc_multiqc_sex_check_table.txt or multiqc_somalier_sex_check.txt"
+      "help": "MultiQC txt data files from the multiqc_data folder. Must include multiqc_general_stats.txt, multiqc_picard_HsMetrics.txt and either multiqc_sex_check_table.txt or multiqc_somalier_sex_check.txt"
     },
     {
       "name": "reports",
@@ -55,7 +55,7 @@
       "patterns": ["*_markdup.per-base.bed.gz"],
       "optional": false,
       "help": "Per-sample per-base bed files from eggd_mosdepth, named <sample>_markdup.per-base.bed.gz. Other mosdepth outputs are ignored"
-    }, 
+    },
     {
       "name": "path_to_bedfile",
       "label": "bedfile used for intersecting mosdepth data",
