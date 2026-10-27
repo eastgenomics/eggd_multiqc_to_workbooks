@@ -17,11 +17,11 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Annotate sample workbooks with QC metrics")
     parser.add_argument("--multiqc_folder", required=True,
-                        help="Name of MultiQC folder under multiqc_inputs/")
+                        help="Path to directory containing MultiQC txt files")
     parser.add_argument("--reports_folder", required=True,
-                        help="Name of reports folder under reports_inputs/")
+                        help="Path to directory containing sample workbooks")
     parser.add_argument("--intersect_folder", required=True,
-                        help="Intersect folder name under intersected_beds/")
+                        help="Path to directory containing intersected bed files")
     parser.add_argument("--config", required=True,
                         help="Path to config file with cell name and location")
     parser.add_argument("--file_suffix", required=True,
@@ -361,9 +361,9 @@ def main():
         raise ValueError(f"Missing required config values: {missing}")
 
     # set paths
-    multiqc_path = Path("multiqc_inputs") / multiqc_folder
-    reports_path = Path("reports_inputs") / reports_folder
-    intersect_path = Path("intersected_beds") / intersect_folder
+    multiqc_path = Path(multiqc_folder)
+    reports_path = Path(reports_folder)
+    intersect_path = Path(intersect_folder)
 
     logging.info(f"MultiQC path: {multiqc_path}")
     logging.info(f"Reports path: {reports_path}")

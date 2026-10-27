@@ -3,7 +3,7 @@
   "title": "eggd_qc_to_workbooks",
   "summary": "A tool to identify multiqc files and add data to reports workbooks",
   "dxapi": "1.0.0",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "changeLog": [
     {
         "version": "1.0.0",
@@ -24,35 +24,43 @@
       "version": "1.1.0",
       "date": "2026-06-29",
       "description": "Update to support adding depth metrics from mosdepth outputs"
+    },
+    {
+      "version": "1.1.1",
+      "date": "2026-09-29",
+      "description": "Replace folder path string inputs (path_to_multiqc_folder, path_to_reports_folder, path_to_mosdepth_folder) with array:file inputs (multiqc_files, reports, mosdepth_files) to enable automated processing via conductor"
     }
 ],
   "inputSpec": [
     {
-      "name": "path_to_multiqc_folder",
-      "label": "path to folder containing multiqc txt data",
-      "class": "string",
+      "name": "multiqc_files",
+      "label": "MultiQC data txt files",
+      "class": "array:file",
+      "patterns": ["*.txt"],
       "optional": false,
-      "help": ""
+      "help": "MultiQC txt data files from the multiqc_data folder. Must include multiqc_general_stats.txt, multiqc_picard_HsMetrics.txt and either multiqc_sex_check_table.txt or multiqc_somalier_sex_check.txt"
     },
     {
-      "name": "path_to_reports_folder",
-      "label": "path to folder containing reports",
-      "class": "string",
+      "name": "reports",
+      "label": "variant workbooks to annotate",
+      "class": "array:file",
+      "patterns": ["*.xlsx"],
       "optional": false,
-      "help": ""
+      "help": "Excel workbooks from eggd_generate_variant_workbook, one per sample. Each file must be named <sample>.xlsx to match the Sample column in the MultiQC data"
     },
     {
-      "name": "path_to_mosdepth_folder",
-      "label": "path to folder containing mosdepth data",
-      "class": "string",
+      "name": "mosdepth_files",
+      "label": "mosdepth per-base bed files",
+      "class": "array:file",
+      "patterns": ["*_markdup.per-base.bed.gz"],
       "optional": false,
-      "help": ""
+      "help": "Per-sample per-base bed files from eggd_mosdepth, named <sample>_markdup.per-base.bed.gz. Other mosdepth outputs are ignored"
     },
     {
       "name": "path_to_bedfile",
       "label": "bedfile used for intersecting mosdepth data",
       "class": "file",
-      "patterns": ["*.bed"],
+      "patterns": ["*.bed", "*.bed.gz"],
       "optional": false,
       "help": ""
     },
